@@ -1,5 +1,8 @@
 from google.adk.agents.llm_agent import LlmAgent
 from prompt import prompt_story_node_generator_agent,prompt_planner_agent
+from agents.root import RootAgent
+
+
 
 
 story_planner_agent = LlmAgent(
@@ -18,6 +21,12 @@ story_node_generator_agent = LlmAgent(
     instruction = prompt_story_node_generator_agent
 )
 
+
+root_agent  = RootAgent(
+    name='root_agent',
+    story_planner_agent = story_planner_agent,
+    story_node_generator_agent=story_node_generator_agent
+)
 
 
 

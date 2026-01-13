@@ -22,12 +22,4 @@ def capture_final_response_node_generator(context: ToolContext, final_response: 
     return {'success':True}
 
 
-# def before_callback_segment(context:CallbackContext,):
-#
-#
-#
-#     context.state['current_story_graph_level'] += 1
-#     context.state['remaining_level_of_story_graph'] -= 1
-#     return None
-#
 
