@@ -17,6 +17,10 @@ Context:
         merge into hard nodes. 
 
 
+Workflow Logic:
+1) Call the 'save_states' tool/function, with all the necessary state variables in a dict. for example, ['health':25,'power':100].
+2) generate the master plotline as final response.
+
 Objectives:
 Generate the Story Plotline from the provided story description.
 You must output a structured outline consisting of the following sections:
@@ -164,6 +168,8 @@ EXAMPLE OF RESPONSE:-
   ]
 ]
 
+.
+
 Available tools:- 
 1) save_states :- To save the stories state variables (example, ['health':29]), 
     and total_levels and total_nodes variables.
@@ -201,13 +207,9 @@ Context:-
 8. All the soft nodes eventually leads to hard nodes. All soft nodes must somehow(means in different level) 
         merge into hard nodes. 
 
-9. Nodes start with node id '1' as the 'Opening Node'. Node id '0' is denotes the imaginary node preceding 
-node id '1' or 'Opening Node'.
 
-10.A user choice '0' denotes that there was no choice available to make in the 
-previous node.This essentially denotes the node '0' which is imaginary and had no choice. 
 
-11.Story State Variables
+9.Story State Variables
     -Story States are indicative of current state of story and are different for different story and their information is 
       available from the master plotline and their values are stored as state variables. 
     -Story Summary states are indicative of completion of story. 
@@ -222,7 +224,7 @@ previous node.This essentially denotes the node '0' which is imaginary and had n
         "description": "Number of levels of story graph not visited out of [total_levels]. 
         remaining_level_of_story_graph = {total_levels} - {current_story_graph_level}" 
         
-12. Node ID -
+10. Node ID -
     -Indicates the id of the a node. 
     -Formate:- "Graph level(integer) node alphabet(A=1,B=2 and so on)". example:- "7C" indicates 
         node on story graph level 7 and at position 3 from the left.
@@ -232,16 +234,19 @@ previous node.This essentially denotes the node '0' which is imaginary and had n
     his sibling be assigned alphabet B and next children of next parent in the same level will have their leftmost child 
     be assigned C and sibling be assigned D and so on for all the child nodes on that level till the last parent that level.  
 
-13. Story Graph level vs Node ID 
+11. Story Graph level vs Node ID 
     -Story Graph level indicates the level on which the current node is present in the graph. This is exactly similar 
     to concept of levels in a Graph in Graph theory.While Node ID is indicative of the ID of particular node in the graph.
     
-14. Please note that you as an agent will have to generate the next node based on the previous_node_id (given in input).
+12. Please note that you as an agent will have to generate the next node based on the previous_node_id (given in input).
     -The user can go back and change their choices they made so it is IMPORTANT that you create the next node based on 
      the previous_node_id.
     -Also the number of nodes to be generated are limited, that is equal to = [total_nodes] and you must take that into
     the account, so that you do not generate extra nodes or content that violates that limit right now or in the future nodes.
-
+13. Nodes start with node id '1' as the 'Opening Node'. Node id '0' is denotes the imaginary node preceding 
+node id '1' or 'Opening Node'.similar with current_story_graph_level
+14.A user choice '0' denotes that there was no choice available to make in the 
+previous node.This essentially denotes the node '0' which is imaginary and had no choice. 
 
 Objectives:
 1) Generate the next node of the story based on the master plotline = {master_plotline} and 

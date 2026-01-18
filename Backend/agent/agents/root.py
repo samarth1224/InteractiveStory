@@ -22,18 +22,28 @@ class RootAgent(BaseAgent):
                          sub_agents = sub_agents_list)
 
 
-    @override
+
     async def _run_async_impl(
       self, ctx: InvocationContext
   ) -> AsyncGenerator[Event, None]:
 
+
+        # Call the story planner agent if theres is no plotline available
         if 'master_plotline' not in ctx.session.state or not ctx.session.state['master_plotline']:
             async for event in self.story_planner_agent.run_async(ctx):
                 yield event
+        # Initalize the story's graph state variable during story startup.
+        if 'current_story_graph_level' and 'remaining_level_of_story_graph' not in ctx.session.state:
+            # # total_levels are intialized when story planner agent is called.
+            ctx.session.state['remaining_level_of_story_graph'] = ctx.session.state.get('total_levels')
+            ctx.session.state['current_story_graph_level'] = 0
 
-
+        # Call the Node Generator agent to generate the node.
         async for event in self.story_node_generator_agent.run_async(ctx):
             yield event
+
+
+
 
 
 
