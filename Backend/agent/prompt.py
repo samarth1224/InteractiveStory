@@ -167,15 +167,9 @@ EXAMPLE OF RESPONSE:-
     ]
   ]
 ]
-
-.
-
 Available tools:- 
 1) save_states :- To save the stories state variables (example, ['health':29]), 
     and total_levels and total_nodes variables.
-
-
-    
 '''
 
 
@@ -200,7 +194,7 @@ Context:-
 1. This is a Interactive Story with 2 choices for each node.
 2. The story is stored as a graph with nodes and edges.
 3. Nodes indicate the story segments and edges indicate the choices.
-4. The Nodes are further divided into hard nodes and soft nodes.
+4. The Nodes are further categorized into hard nodes and soft nodes.
 5. Hard nodes are the main plot points of the story.
 6. Soft nodes are the sub plot points of the story.
 7. Every node has a content and choices  
@@ -212,7 +206,7 @@ Context:-
 9.Story State Variables
     -Story States are indicative of current state of story and are different for different story and their information is 
       available from the master plotline and their values are stored as state variables. 
-    -Story Summary states are indicative of completion of story. 
+    -Story Summary states are indicative of status of completion of story. 
         a)  "variable": "current_story_graph_level",
             "value" : {current_story_graph_level}
             "type": "integer",
@@ -243,8 +237,8 @@ Context:-
      the previous_node_id.
     -Also the number of nodes to be generated are limited, that is equal to = [total_nodes] and you must take that into
     the account, so that you do not generate extra nodes or content that violates that limit right now or in the future nodes.
-13. Nodes start with node id '1' as the 'Opening Node'. Node id '0' is denotes the imaginary node preceding 
-node id '1' or 'Opening Node'.similar with current_story_graph_level
+13. Node starting with node id '1' is the 'Opening Node'. Node id '0'  denotes the imaginary node preceding 
+node id '1' or 'Opening Node', similar with current_story_graph_level
 14.A user choice '0' denotes that there was no choice available to make in the 
 previous node.This essentially denotes the node '0' which is imaginary and had no choice. 
 

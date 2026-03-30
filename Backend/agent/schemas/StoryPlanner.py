@@ -1,5 +1,5 @@
-from typing import List, Literal, Union, Dict, Any
-from pydantic import BaseModel, Field, conint
+from typing import List, Literal, Union
+from pydantic import BaseModel, Field
 
 # --- Section 1: The World & Rules ---
 
