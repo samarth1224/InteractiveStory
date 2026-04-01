@@ -1,7 +1,8 @@
 from beanie import Document,PydanticObjectId
-from pydantic import BaseModel
+from pydantic import BaseModel,Field
 from typing import Any,Dict,List,Optional
 from datetime import datetime
+import uuid
 
 class StateVariables(BaseModel):
     variables: Dict[str, Any] = {}
@@ -23,7 +24,16 @@ class StoryNode(BaseModel):
     image_prompt: Optional[str] = None
     current_state: StateVariables = StateVariables()
 
-class Story(Document):
+class StoryBase(BaseModel):
+    public_id: uuid.UUID = Field(default_factory=uuid.uuid4, unique=True)
+    title: str
+    description: str
+    created_at: datetime
+    total_nodes: int
+    total_levels: int
+    state_variable_definitions: List[Dict[str, Any]]
+
+class Story(Document,StoryBase):
     title: str
     description: str
     owner_id: str  # Reference to User
@@ -33,5 +43,11 @@ class Story(Document):
     master_plotline: Dict[str, Any]  # Stores StoryPlotlinePlan
     state_variable_definitions: List[Dict[str, Any]]
     nodes: List[StoryNode] = []
+
+class StoryPublic(BaseModel):
+    pass
+
+
+
 
 
