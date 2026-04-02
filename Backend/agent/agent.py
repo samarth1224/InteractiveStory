@@ -2,6 +2,7 @@ from google.adk.agents.llm_agent import LlmAgent
 from agent.prompt import prompt_story_node_generator_agent,prompt_planner_agent
 from agent.agents.root import RootAgent
 from agent.tools.tools import  save_states,capture_final_response_node_generator
+from schemas.NodeGenerator import StoryNodeGeneratorAgentResponse
 
 
 story_planner_agent = LlmAgent(
@@ -11,7 +12,6 @@ story_planner_agent = LlmAgent(
     instruction =  prompt_planner_agent,
     output_key = 'master_plotline',
     tools = [save_states]
-
 )
 
 story_node_generator_agent = LlmAgent(
@@ -19,7 +19,7 @@ story_node_generator_agent = LlmAgent(
     name = 'story_node_generator_agent',
     description = 'Generates the individual nodes of a story',
     instruction = prompt_story_node_generator_agent,
-    tools = [capture_final_response_node_generator]
+    output_schema = StoryNodeGeneratorAgentResponse
 )
 
 

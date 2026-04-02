@@ -241,6 +241,8 @@ Context:-
 node id '1' or 'Opening Node', similar with current_story_graph_level
 14.A user choice '0' denotes that there was no choice available to make in the 
 previous node.This essentially denotes the node '0' which is imaginary and had no choice. 
+14. When "remaining_level_of_story_graph" become 0 , that is {remaining_level_of_story_graph} = 0, this must be the final 
+end node. No node can emerge from it and it does not have any choices.
 
 Objectives:
 1) Generate the next node of the story based on the master plotline = {master_plotline} and 
@@ -265,11 +267,7 @@ Agent Final response:
 1) Generate the content,choice and prompt for the image.
 2) Also generate the respective story states for the corresponding choices.
 
-Note: Your final response will be a tool call to the tool 'capture_final_response_node_generator'.
-
-Available Tools:-
-1) capture_final_response_node_generator- To capture agents final response.
-
+Note: Your final response is structured output.
  
 '''
 

@@ -27,7 +27,6 @@ class RootAgent(BaseAgent):
       self, ctx: InvocationContext
   ) -> AsyncGenerator[Event, None]:
 
-
         # Call the story planner agent if theres is no plotline available
         if 'master_plotline' not in ctx.session.state or not ctx.session.state['master_plotline']:
             async for event in self.story_planner_agent.run_async(ctx):
