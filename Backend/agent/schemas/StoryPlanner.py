@@ -1,4 +1,4 @@
-from typing import List, Literal, Union
+from typing import List, Literal, Union,Any
 from pydantic import BaseModel, Field
 
 # --- Section 1: The World & Rules ---
@@ -32,6 +32,11 @@ class GraphStats(BaseModel):
         le=20, 
         description="Total count of inclusive soft and hard nodes."
     )
+class StoryTitle(BaseModel):
+    title: str = Field(
+        ...,
+        description="A catchy title for the story."
+    )
 
 class HardNode(BaseModel):
     node_type: Literal["Opening", "Midpoint", "Climax", "Ending"] = Field(
@@ -61,6 +66,7 @@ class StateVariable(BaseModel):
     variable_name: str = Field(..., description="The unique ID of the variable.")
     type: Literal["Integer", "Boolean", "String"] = Field(..., description="The data type.")
     description: str = Field(..., description="How this variable impacts the story.")
+    value: Any = Field(... , description= 'The intial value of this state varibale. Its type is same as attribute type')
 
 class BranchingLogic(BaseModel):
     branching_philosophy: str = Field(
@@ -83,7 +89,7 @@ class StoryPlotlinePlan(BaseModel):
     
     # Using a tuple/list structure to match your specific requirement 
     # of [GraphStats, List[HardNode]]
-    bottleneck_map: List[Union[GraphStats, List[HardNode]]] = Field(
+    bottleneck_map: List[Union[GraphStats,StoryTitle, List[HardNode]]] = Field(
         ..., 
         description="Contains graph metadata followed by the definition of 4 Hard Nodes."
     )

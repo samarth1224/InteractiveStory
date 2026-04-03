@@ -1,8 +1,10 @@
 from google.adk.agents.llm_agent import LlmAgent
-from agent.prompt import prompt_story_node_generator_agent,prompt_planner_agent
+
 from agent.agents.root import RootAgent
-from agent.tools.tools import  save_states,capture_final_response_node_generator
+from agent.prompt import prompt_story_node_generator_agent,prompt_planner_agent
 from schemas.NodeGenerator import StoryNodeGeneratorAgentResponse
+from schemas.StoryPlanner import StoryPlotlinePlan
+from callbacks.StoryPlannerCallbacks import save_states
 
 
 story_planner_agent = LlmAgent(
@@ -11,7 +13,8 @@ story_planner_agent = LlmAgent(
     description = "Planes the story based on user's prompt. " ,
     instruction =  prompt_planner_agent,
     output_key = 'master_plotline',
-    tools = [save_states]
+    output_schema = StoryPlotlinePlan,
+    after_model_callback = save_states
 )
 
 story_node_generator_agent = LlmAgent(

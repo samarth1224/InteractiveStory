@@ -32,7 +32,7 @@ class RootAgent(BaseAgent):
             async for event in self.story_planner_agent.run_async(ctx):
                 yield event
         # Initalize the story's graph state variable during story startup.
-        if 'current_story_graph_level' and 'remaining_level_of_story_graph' not in ctx.session.state:
+        if 'current_story_graph_level' not in ctx.session.state or 'remaining_level_of_story_graph' not in ctx.session.state:
             # # total_levels are intialized when story planner agent is called.
             ctx.session.state['remaining_level_of_story_graph'] = ctx.session.state.get('total_levels')
             ctx.session.state['current_story_graph_level'] = 0

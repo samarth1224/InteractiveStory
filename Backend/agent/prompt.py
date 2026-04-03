@@ -18,15 +18,13 @@ Context:
 
 
 Workflow Logic:
-1) Call the 'save_states' tool/function, with all the necessary state variables in a dict. for example, ['health':25,'power':100].
-2) generate the master plotline as final response.
+1) generate the master plotline as final response.
 
 Objectives:
 Generate the Story Plotline from the provided story description.
 You must output a structured outline consisting of the following sections:
 
 Section 1: The World & Rules
-
     -Setting: Detailed description of the world.
     -Tone Guidelines: Describe the prose style (e.g., 'Lovecraftian horror,' 'Fast-paced cyberpunk').
     -Core Conflict: The primary force opposing the player.
@@ -67,6 +65,9 @@ Response Instruction:-
 
   ],
   [
+  title: A catchy title for the story,
+],
+  [
 
     [
       "node_type": "Opening",
@@ -104,72 +105,12 @@ Response Instruction:-
         "variable_name": "Variable_ID",
         "type": "Integer/Boolean/String",
         "description": "How this variable tracks progress or morality."
+        "value":  "The intial value of this state variable. The type is same as attribute "type" of this variable."
       ]
     ]
   ]
 ]
 
-EXAMPLE OF RESPONSE:-
-[
-  "world_and_rules": [
-    "setting": "Aquatica-7, a decaying multi-level bio-dome anchored to the floor of the Atlantic. The upper levels are lush and pressurized, while the 'Sump' levels are leaking, rusted, and dimly lit by bioluminescent algae. The atmosphere is heavy with the smell of salt and ozone.",
-    "tone_guidelines": "Noir-Thriller with elements of survival horror. Prose should be cynical, sharp, and claustrophobic. Use frequent metaphors involving drowning and pressure.",
-    "core_conflict": "The Thalassocracy (The ruling council) vs. The Sump Dwellers. The primary antagonist is Director Varick, who views the oxygen rationing as 'biological pruning'."
-  ],
-  "bottleneck_map": [
-    [
-      "node_type": "Opening",
-      "node_name": "The Last Breath",
-      "mandatory_event": "The protagonist finds a dead technician holding an encrypted data-pad showing oxygen diversion logs.",
-      "key_revelation": "The 'leaks' in the lower levels are not accidents; they are controlled vents triggered by a central command.",
-      "exit_conditions": "The player must have decrypted the data-pad and escaped the initial Enforcer patrol."
-    ],
-    [
-      "node_type": "Midpoint",
-      "node_name": "The Sump Insurrection",
-      "mandatory_event": "The player reaches the secret rebel base in the Sump and must decide whether to lead them in a raid or steal their last oxygen tank for themselves.",
-      "key_revelation": "Director Varick is actually planning to decouple the Sump entirely, letting it sink into the trench.",
-      "exit_conditions": "The player obtains the 'Maintenance Keycard' and either gains the 'Rebel Leader' or 'Lone Wolf' status."
-    ],
-    [
-      "node_type": "Climax",
-      "node_name": "The Oxygen Spire",
-      "mandatory_event": "A final confrontation with Director Varick in the pressure-control room as the glass begins to crack.",
-      "key_revelation": "The sabotage codes are voice-locked to the Director's own biometrics.",
-      "exit_conditions": "The player must have neutralized Varick (via force or persuasion) and initiated the 'Emergency Re-pressurization' sequence."
-    ],
-    [
-      "node_type": "Ending",
-      "node_name": "The Rising Tide",
-      "mandatory_event": "The dome stabilizes or collapses based on the player's previous speed and choices. The survivors see the surface for the first time.",
-      "key_revelation": "The surface world isn't the wasteland they were told it was; it is habitable.",
-      "exit_conditions": "Narrative completion."
-    ]
-  ],
-  "branching_logic": [
-    "branching_philosophy": "Between nodes, the story branches based on Stealth vs. Combat and Altruism vs. Self-Preservation. Choices in the 'Strings' determine the flavor of the next Bottleneck.",
-    "state_variables": [
-      [
-        "variable": "Oxygen_Reserve",
-        "type": "Integer (0-100)",
-        "description": "Decreases with every action. If it reaches zero, the player suffers 'Hypoxia' which limits dialogue options."
-      ],
-      [
-        "variable": "Council_Suspicion",
-        "type": "Integer (0-100)",
-        "description": "Increases if the player is caught or kills Enforcers. High suspicion leads to more combat-heavy strings."
-      ],
-      [
-        "variable": "Sump_Loyalty",
-        "type": "Boolean",
-        "description": "Determines if rebels will provide backup during the Climax."
-      ]
-    ]
-  ]
-]
-Available tools:- 
-1) save_states :- To save the stories state variables (example, ['health':29]), 
-    and total_levels and total_nodes variables.
 '''
 
 
