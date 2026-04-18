@@ -53,63 +53,61 @@ Section 3: The Branching Logic (The Strings)
 
 
 Response Instruction:-
-[
-  "world_and_rules": [
+{
+  "world_and_rules": {
     "setting": "Detailed description of the geography, era, and atmosphere.",
     "tone_guidelines": "Instructions for prose style (e.g., vocabulary, sentence length, mood).",
     "core_conflict": "The main antagonist or systemic force working against the player."
-  ],
-  "bottleneck_map": [ [
-  total_levels: integer(between 4 and 10),
-  total_nodes: integer( between 4 and 20)
-
-  ],
-  [
-  title: A catchy title for the story,
-],
-  [
-
-    [
-      "node_type": "Opening",
-      "node_name": "Unique Name",
-      "mandatory_event": "The specific event that triggers the story's start.",
-      "key_revelation": "The first major piece of information the player learns.",
-      "exit_conditions": "What the player must possess or achieve to finish this node."
-    ],
-    [
-      "node_type": "Midpoint",
-      "node_name": "Unique Name",
-      "mandatory_event": "The central twist or escalation of stakes.",
-      "key_revelation": "The truth that changes the player's perspective of the mission.",
-      "exit_conditions": "The decision or action that pushes the player toward the climax."
-    ],
-    [
-      "node_type": "Climax",
-      "node_name": "Unique Name",
-      "mandatory_event": "The final confrontation or highest point of tension.",
-      "key_revelation": "The final missing piece of the puzzle.",
-      "exit_conditions": "The resolution of the main conflict."
-    ],
-    [
-      "node_type": "Ending",
-      "node_name": "Unique Name",
-      "mandatory_event": "The aftermath and final image.",
-      "key_revelation": "The ultimate consequence of the player's journey.",
-      "exit_conditions": "Story termination."
+  },
+  "bottleneck_map": {
+    "stats": {
+      "total_levels": integer (between 4 and 10),
+      "total_nodes": integer (between 4 and 20)
+    },
+    "title": "A catchy title for the story",
+    "hard_nodes": [
+      {
+        "node_type": "Opening",
+        "node_name": "Unique Name",
+        "mandatory_event": "The specific event that triggers the story's start.",
+        "key_revelation": "The first major piece of information the player learns.",
+        "exit_conditions": "What the player must possess or achieve to finish this node."
+      },
+      {
+        "node_type": "Midpoint",
+        "node_name": "Unique Name",
+        "mandatory_event": "The central twist or escalation of stakes.",
+        "key_revelation": "The truth that changes the player's perspective of the mission.",
+        "exit_conditions": "The decision or action that pushes the player toward the climax."
+      },
+      {
+        "node_type": "Climax",
+        "node_name": "Unique Name",
+        "mandatory_event": "The final confrontation or highest point of tension.",
+        "key_revelation": "The final missing piece of the puzzle.",
+        "exit_conditions": "The resolution of the main conflict."
+      },
+      {
+        "node_type": "Ending",
+        "node_name": "Unique Name",
+        "mandatory_event": "The aftermath and final image.",
+        "key_revelation": "The ultimate consequence of the player's journey.",
+        "exit_conditions": "Story termination."
+      }
     ]
-  ]],
-  "branching_logic": [
+  },
+  "branching_logic": {
     "branching_philosophy": "How the 'Strings' between pearls should feel (e.g., Exploration vs. Combat).",
     "state_variables": [
-      [
+      {
         "variable_name": "Variable_ID",
         "type": "Integer/Boolean/String",
-        "description": "How this variable tracks progress or morality."
-        "value":  "The intial value of this state variable. The type is same as attribute "type" of this variable."
-      ]
+        "description": "How this variable tracks progress or morality.",
+        "value": "The initial value of this state variable. The type is same as attribute type of this variable."
+      }
     ]
-  ]
-]
+  }
+}
 
 '''
 
