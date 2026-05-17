@@ -1,1 +1,9 @@
 /Backend/agent/.adk
+*.db
+Backend/AGENTS.md
+Backend/app/config.py
+Backend/llms-full.txt
+Backend/llms.txt
+Backend/localhost-key.pem
+Backend/localhost-key.pem
+Backend/localhost.pem
