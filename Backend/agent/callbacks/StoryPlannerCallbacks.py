@@ -13,7 +13,7 @@ from ..schemas.StoryPlanner import StoryPlotlinePlan
 
 def save_states(
     callback_context: CallbackContext, llm_response: LlmResponse
-) -> None:
+) :
     """Extract graph metadata from the planner response and save to
     session state.
 
@@ -33,16 +33,20 @@ def save_states(
         ``None``.  If the response has no content parts, the function
         is a no-op.
     """
+
     if llm_response.content and llm_response.content.parts:
         final_response_text = llm_response.content.parts[0].text
+        
         final_response = StoryPlotlinePlan.model_validate_json(
             final_response_text
         )
+
         callback_context.state["total_nodes"] = (
             final_response.bottleneck_map.stats.total_nodes
         )
         callback_context.state["total_levels"] = (
             final_response.bottleneck_map.stats.total_levels
         )
-    else:
-        return None
+    return None
+    
+

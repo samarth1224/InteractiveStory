@@ -15,45 +15,53 @@ endpoints, e.g.::
 from app.config import settings
 from app.models.securitymodel import TokenData
 from app.models.usermodel import User
-from app.utility.security import oauth2_scheme
+from app.utility.security import extract_token_from_request
 
-from fastapi import HTTPException, Depends, status
-from typing import Annotated
+from fastapi import HTTPException, Request, status
 
 import jwt
 from jwt.exceptions import InvalidTokenError
 
 
-async def verify_user_access_token(
-    token: Annotated[str, Depends(oauth2_scheme)],
-) -> User:
-    """Validate a JWT bearer token and return the corresponding user.
+async def verify_user_access_token(request: Request) -> User:
+    """Validate a JWT token and return the corresponding user.
+
+    Supports both registered and guest users.  The token is first
+    extracted from the ``access_token`` HTTP-only cookie; if absent,
+    the ``Authorization: Bearer`` header is checked as a fallback.
 
     This function is designed to be used as a FastAPI dependency via
     ``Depends(verify_user_access_token)``.  It:
 
-    1. Decodes and validates the JWT token.
-    2. Extracts the ``sub`` (public_id) and ``username`` claims.
-    3. Looks up the :class:`~app.models.usermodel.User` document in
+    1. Extracts the JWT from the cookie or header.
+    2. Decodes and validates the JWT token.
+    3. Extracts the ``sub`` (public_id), ``username``, and ``is_guest``
+       claims.
+    4. Looks up the :class:`~app.models.usermodel.User` document in
        MongoDB.
-    4. Returns the user or raises **401 Unauthorized**.
+    5. Returns the user or raises **401 Unauthorized**.
 
     Args:
-        token: The raw JWT string extracted from the ``Authorization:
-            Bearer <token>`` header by the ``oauth2_scheme``.
+        request: The incoming :class:`~fastapi.Request` (injected
+            automatically by FastAPI).
 
     Returns:
         The authenticated :class:`~app.models.usermodel.User` document.
 
     Raises:
-        HTTPException: 401 if the token is invalid, expired, or the
-            user no longer exists.
+        HTTPException: 401 if no token is present, the token is invalid
+            or expired, or the user no longer exists.
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    token = extract_token_from_request(request)
+    if token is None:
+        raise credentials_exception
+
     try:
         payload = jwt.decode(
             token,
@@ -62,9 +70,14 @@ async def verify_user_access_token(
         )
         public_id = payload.get("sub")
         username = payload.get("username")
+        is_guest = payload.get("is_guest", False)
         if public_id is None:
             raise credentials_exception
-        token_data = TokenData(public_id=public_id, username=username)
+        token_data = TokenData(
+            public_id=public_id,
+            username=username,
+            is_guest=is_guest,
+        )
     except InvalidTokenError:
         raise credentials_exception
 

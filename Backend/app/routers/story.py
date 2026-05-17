@@ -10,6 +10,8 @@ from app.models.usermodel import User
 from app.utility.dependencies import verify_user_access_token
 
 from agent.runner import call_agent_async, create_session, runner
+from agent.schemas.StoryPlanner import StoryPlotlinePlan
+from agent.schemas.NodeGenerator import StoryNodeGeneratorAgentResponse
 
 from fastapi import APIRouter, HTTPException, Body, Depends
 
@@ -57,11 +59,11 @@ async def get_story(public_id: uuid.UUID) -> StoryPublic:
     return story
 
 
-@router.post("/generate", response_model=StoryPublic)
+@router.post("/generate", response_model=Story)
 async def generate_story(
     user: VerifyUserTokenDep,
     prompt: Annotated[str, Body()],
-) -> StoryPublic:
+) -> Story:
     """Generate a brand-new interactive story from a user prompt.
 
     Delegates to the AI agent to produce a master plotline and the
@@ -80,17 +82,23 @@ async def generate_story(
             story or an unexpected runtime error occurs.
     """
     try:
-        session = await create_session(
-            user_id=user.public_id, story_id=uuid.uuid4()
+        story_id = uuid.uuid4()
+        await create_session(
+            user_id=user.public_id, story_id=story_id
         )
-        generated_node = await call_agent_async(
+        async for response in call_agent_async(
             prompt=prompt,
             runner=runner,
-            user_id=session.user_id,
-            story_id=session.id,
-        )
-        master_plotline = session.state["master_plotline"]
-        if not master_plotline:
+            user_id=user.public_id,
+            story_id=story_id,
+        ):
+
+            if isinstance(response, StoryPlotlinePlan):
+                master_plotline = response
+            if isinstance(response, StoryNodeGeneratorAgentResponse):
+                generated_node = response
+
+        if master_plotline is None or generated_node is None:
             raise HTTPException(
                 status_code=500, detail="Agent failed to generate story."
             )
@@ -108,13 +116,13 @@ async def generate_story(
             current_state=first_node_state_variables,
         )
         new_story = Story(
-            public_id=session.id,
+            public_id=story_id,
             title=master_plotline.bottleneck_map.title,
-            user_id=session.user_id,
-            master_plotline=master_plotline,
+            user_id=user.public_id,
+            master_plotline=master_plotline.model_dump(),
             total_nodes=master_plotline.bottleneck_map.stats.total_nodes,
             total_levels=master_plotline.bottleneck_map.stats.total_levels,
-            state_variable_definitions=master_plotline.branching_logic.state_variables,
+            state_variable_definitions=[variable.model_dump() for variable in master_plotline.branching_logic.state_variables],
             nodes=[first_node],
         )
         await new_story.insert()

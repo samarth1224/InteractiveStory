@@ -5,7 +5,7 @@ Provides:
 - A pre-configured :class:`Runner` instance wired to the root agent.
 - :func:`create_session` for initialising per-story ADK sessions.
 - :func:`call_agent_async` for invoking the agent pipeline and
-  extracting the structured node response.
+  extracting the structured node response along with the updated session.
 """
 
 from dotenv import load_dotenv
@@ -19,9 +19,10 @@ from google.genai import types
 
 from .agent import root_agent
 from .schemas.NodeGenerator import StoryNodeGeneratorAgentResponse
+from .schemas.StoryPlanner import StoryPlotlinePlan
 
 
-APP_NAME = "Interactive Story"
+APP_NAME = "agents"
 
 session_service = DatabaseSessionService(
     db_url=os.getenv("DATABASE_URL")
@@ -48,6 +49,7 @@ async def create_session(user_id, story_id) -> Session:
     Returns:
         The newly created :class:`Session` instance.
     """
+    print(f'session_id = {story_id} and {str(story_id)}')
     return await session_service.create_session(
         app_name=APP_NAME,
         user_id=str(user_id),
@@ -60,7 +62,7 @@ async def call_agent_async(
     runner: Runner,
     user_id,
     story_id,
-) -> StoryNodeGeneratorAgentResponse:
+) -> StoryNodeGeneratorAgentResponse | StoryPlotlinePlan :
     """Invoke the agent pipeline and return the generated story node.
 
     Sends *prompt* to the runner, iterates over events until the final
@@ -81,21 +83,35 @@ async def call_agent_async(
             no usable final response.
     """
     content = types.Content(role="user", parts=[types.Part(text=prompt)])
-
     async for event in runner.run_async(
         user_id=str(user_id),
         session_id=str(story_id),
         new_message=content,
     ):
+        if event.author == "story_planner_agent" and event.is_final_response:
+            response = (
+                StoryPlotlinePlan.model_validate_json(
+                    event.content.parts[0].text
+            )
+            )
+            yield response
+            continue
+
         if event.is_final_response():
             if event.content and event.content.parts:
                 final_response_text = event.content.parts[0].text
-                final_response = (
-                    StoryNodeGeneratorAgentResponse.model_validate_json(
-                        final_response_text
+                try:
+                    final_response = (
+                        StoryNodeGeneratorAgentResponse.model_validate_json(
+                            final_response_text
+                        )
                     )
-                )
-                return final_response
+                except ValueError as e:
+                    raise RuntimeError(
+                        f"Agent produced invalid response: {e}"
+                    )
+                yield final_response
+                return 
             elif event.actions and event.actions.escalate:
                 error_msg = (
                     event.error_message or "No specific message provided."

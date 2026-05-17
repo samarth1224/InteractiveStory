@@ -132,7 +132,7 @@ class Story(Document, StoryBase):
             so far.
     """
 
-    user_id: str  # Reference to User
+    user_id: uuid.UUID  # Reference to User
     master_plotline: Dict[str, Any]  # Stores StoryPlotlinePlan
     nodes: List[StoryNode] = Field(default_factory=list)
 

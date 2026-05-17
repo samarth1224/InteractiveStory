@@ -30,7 +30,9 @@ class TokenData(BaseModel):
     Attributes:
         username: The username claim from the token payload.
         public_id: The user's public UUID extracted from the ``sub`` claim.
+        is_guest: Whether the token belongs to a guest account.
     """
 
     username: str | None = None
     public_id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    is_guest: bool = False

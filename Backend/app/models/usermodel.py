@@ -8,6 +8,7 @@ for public responses and user registration requests.
 from beanie import Document
 from pydantic import BaseModel, Field
 from datetime import datetime, timezone
+from typing import Optional
 import uuid
 
 
@@ -17,11 +18,13 @@ class UserBase(BaseModel):
     Attributes:
         public_id: Externally-visible UUID for the user.
         username: Unique username chosen during registration.
+        is_guest: Whether this account is a temporary guest session.
         created_at: Timestamp when the account was created (UTC).
     """
 
     public_id: uuid.UUID = Field(default_factory=uuid.uuid4)
     username: str
+    is_guest: bool = Field(default=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -29,13 +32,15 @@ class User(Document, UserBase):
     """MongoDB document representing an application user.
 
     Extends :class:`UserBase` with the password hash that is never
-    exposed through public API responses.
+    exposed through public API responses.  Guest users have no password,
+    so ``hashed_password`` is ``None`` for them.
 
     Attributes:
-        hashed_password: Argon2-hashed password string.
+        hashed_password: Argon2-hashed password string, or ``None`` for
+            guest accounts.
     """
 
-    hashed_password: str
+    hashed_password: Optional[str] = None
 
 
 class UserPublic(UserBase):
