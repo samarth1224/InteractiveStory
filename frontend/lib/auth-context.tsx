@@ -14,8 +14,8 @@ import {
   signupUser,
   loginAsGuest,
   logoutUser,
-  type UserPublic,
 } from "@/lib/auth";
+import { UserPublic } from "@/interfaces/user.type";
 
 /* ── Context shape ─────────────────────────────────────────── */
 interface AuthContextValue {
