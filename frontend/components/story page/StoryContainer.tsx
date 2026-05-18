@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -7,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap } from 'lucide-react';
 import { StoryData } from '@/interfaces/storydata.type';
 import { StoryChoice } from '@/interfaces/storydata.type';
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://localhost:25000";
 
 function StoryDisplay({ content, image, pageNumber }: { content: string; image: string | null; pageNumber: number }) {
   return (
@@ -34,9 +37,9 @@ function StoryDisplay({ content, image, pageNumber }: { content: string; image: 
   );
 }
 
-function ChoiceButtons({ choice, onSelect }: {
+function ChoiceButtons({ choice, onSubmit }: {
   choice: StoryChoice[];
-  onSelect?: (id: number) => void;
+  onSubmit: (choice_id: number) => void;
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
@@ -51,7 +54,7 @@ function ChoiceButtons({ choice, onSelect }: {
           <Button
             variant="outline"
             className="w-full h-auto min-h-[4.5rem] items-start justify-between text-left font-medium border-border hover:bg-foreground/5 hover:border-foreground/40 transition-all p-4 whitespace-normal"
-            onClick={() => onSelect?.(c.choice_id)}
+            onClick={() => onSubmit(c.choice_id)}
           >
             <span>{c.text}</span>
             <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0" strokeWidth={1.75} />
@@ -65,7 +68,30 @@ function ChoiceButtons({ choice, onSelect }: {
 export default function StoryContainer(
   { StoryData }: { StoryData: StoryData }
 ) {
-  const [selected, setSelected] = useState<number | null>(null);
+  const [currentNode, setCurrentNode] = useState(StoryData.nodes[0]);
+
+  const handleSubmit = async (choice_id: number) => {
+    try {
+      const response = await fetch(`${baseUrl}/story/${StoryData.public_id}/next_node`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          previous_node_id: currentNode.node_id,
+          choice_id: choice_id,
+        }),
+        credentials: "include",
+      })
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentNode(data);
+      }
+    } catch (error) {
+      console.error("An Error occurred", error);
+    }
+  }
+
   if (StoryData == null) {
     return (
       null
@@ -88,13 +114,13 @@ export default function StoryContainer(
         </CardHeader>
 
         <CardContent className="space-y-8 pt-6">
-          <StoryDisplay content={StoryData.nodes[0].content} image={StoryData.nodes[0].image_url} pageNumber={1} />
+          <StoryDisplay content={currentNode.content} image={currentNode.image_url} pageNumber={currentNode.level} />
 
           <div>
             <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mb-3">
               What happens next?
             </p>
-            <ChoiceButtons choice={StoryData.nodes[0].choices} onSelect={setSelected} />
+            <ChoiceButtons choice={currentNode.choices} onSubmit={handleSubmit} />
           </div>
         </CardContent>
       </Card>
