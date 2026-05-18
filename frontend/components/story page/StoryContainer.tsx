@@ -72,7 +72,7 @@ export default function StoryContainer(
 
   const handleSubmit = async (choice_id: number) => {
     try {
-      const response = await fetch(`${baseUrl}/story/${StoryData.public_id}/next_node`, {
+      const response = await fetch(`${baseUrl}/story/${StoryData.public_id}/create_node`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -195,6 +195,14 @@ async def create_node(
 
     choice = previous_node.choices[choice_id - 1]
 
+    # If the target node has already been generated, return it directly
+    existing_node = next(
+        (node for node in story.nodes if node.node_id == choice.next_node_id),
+        None,
+    )
+    if existing_node:
+        return existing_node
+
     prompt = f"previous_node_id:{previous_node_id}, choice_id:{choice_id}"
     try:
         async for response in call_agent_async(
