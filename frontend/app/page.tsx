@@ -1,7 +1,41 @@
 import StoryCreationContainer from "@/components/home page/StoryCreationContainer";
 import StoryDiscoveryFeed from "@/components/home page/StoryDiscoveryFeed";
+import { StoryData } from "@/interfaces/storydata.type";
+import { cookies } from "next/headers";
 
-export default function Home() {
+const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://localhost:25000";
+
+async function fetchStories(): Promise<StoryData[]> {
+  try {
+    const cookieStore = await cookies();
+    const cookieString = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
+
+    const response = await fetch(`${baseURL}/story/stories`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Cookie": cookieString
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {
+    console.error("failed to fetch stories:", error);
+  }
+  return [];
+}
+
+
+export default async function Home() {
+  const stories = await fetchStories();
+
+  if (!stories || stories.length === 0) {
+    console.log("No stories fetched or empty response");
+  }
+
   return (
     <main className="min-h-screen pt-[72px] relative overflow-hidden">
 
@@ -38,7 +72,7 @@ export default function Home() {
 
       {/* ── Discovery feed ──────────────────────────────────────────── */}
       <div className="relative z-10">
-        <StoryDiscoveryFeed />
+        <StoryDiscoveryFeed Stories={stories} />
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────── */}
