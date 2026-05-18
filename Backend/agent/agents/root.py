@@ -73,7 +73,6 @@ class RootAgent(BaseAgent):
         ):
             async for event in self.story_planner_agent.run_async(ctx):
                 yield event
-
         # Initialise the story's graph state variables during story startup
         if (
             "current_story_graph_level" not in ctx.session.state

@@ -63,7 +63,7 @@ async def get_story(public_id: uuid.UUID) -> StoryPublic:
 async def generate_story(
     user: VerifyUserTokenDep,
     prompt: Annotated[str, Body()],
-) -> Story:
+) -> StoryPublic:
     """Generate a brand-new interactive story from a user prompt.
 
     Delegates to the AI agent to produce a master plotline and the
@@ -156,8 +156,8 @@ async def get_story_nodes(
 async def create_node(
     user: VerifyUserTokenDep,
     public_story_id: uuid.UUID,
-    previous_node_id: str,
-    choice_id: int,
+    previous_node_id: Annotated[str, Body()],
+    choice_id: Annotated[int, Body()],
 ) -> StoryNodePublic:
     """Create the next story node based on a reader's choice.
 
@@ -197,14 +197,20 @@ async def create_node(
 
     prompt = f"previous_node_id:{previous_node_id}, choice_id:{choice_id}"
     try:
-        generated_node = await call_agent_async(
+        async for response in call_agent_async(
             prompt=prompt,
             runner=runner,
             user_id=str(user.public_id),
             story_id=public_story_id,
-        )
+        ):
+            if isinstance(response, StoryNodeGeneratorAgentResponse):
+                generated_node = response
+            else: continue
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    if generated_node is None:
+        raise HTTPException(status_code=500, detail="Agent failed to generate story.")
 
     next_node = StoryNode(
         **generated_node.model_dump(),
