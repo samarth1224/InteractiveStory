@@ -10,9 +10,9 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "StoryForge — Craft Your Interactive Tale",
+  title: "InteractiveStory",
   description:
-    "An AI-powered interactive storytelling platform. Begin your adventure, shape the narrative, and explore worlds born from your imagination.",
+    "An AI-powered interactive story creation platform. Begin your adventure, shape the narrative, and explore worlds born from your imagination.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -117,7 +117,7 @@ function StoryCard({ story }: { story: StoryData }) {
         {/* Card Footer */}
         <CardFooter className="justify-between">
           <Link
-            href={`/Story/${encodeURIComponent(story.title)}`}
+            href={`/Story/view/${encodeURIComponent(story.public_id)}`}
             id={`read-story-${story.public_id}`}
             className="group/link flex items-center gap-1.5 text-[0.82rem] font-semibold text-foreground no-underline hover:gap-2.5 transition-all duration-200"
           >
