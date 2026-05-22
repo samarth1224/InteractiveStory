@@ -22,7 +22,7 @@ export default function Navbar() {
         href="/"
         className="font-bold tracking-widest text-xl text-foreground hover:text-muted-foreground transition-colors"
       >
-        StoryForge
+        InteractiveStory
       </Link>
 
       {/* Nav Links */}
@@ -30,19 +30,9 @@ export default function Navbar() {
         <Link href="/" className="text-muted-foreground text-sm font-medium hover:text-foreground transition-colors">
           Home
         </Link>
-        <Link href="/explore" className="text-muted-foreground text-sm font-medium hover:text-foreground transition-colors">
-          Explore
-        </Link>
         <Link href="/my-stories" className="text-muted-foreground text-sm font-medium hover:text-foreground transition-colors">
           My Stories
         </Link>
-        <Link
-          href="/new"
-          className="bg-foreground text-background text-sm font-semibold px-5 py-2 rounded-xl hover:-translate-y-0.5 hover:opacity-90 transition-all"
-        >
-          Start Writing
-        </Link>
-
         {/* Auth state */}
         <AnimatePresence mode="wait">
           {!loading && (
