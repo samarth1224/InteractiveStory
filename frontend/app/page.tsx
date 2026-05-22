@@ -77,7 +77,7 @@ export default async function Home() {
 
       {/* ── Footer ──────────────────────────────────────────────────── */}
       <footer className="flex flex-col items-center justify-center px-6 py-10 border-t border-border text-muted-foreground text-sm">
-        <p className="text-foreground text-base mb-2 font-semibold tracking-widest">StoryForge</p>
+        <p className="text-foreground text-base mb-2 font-semibold tracking-widest">InteractiveStory</p>
         <div className="flex items-center gap-1.5">
           <span>Crafted with imagination & AI</span>
           <span className="ml-2">{new Date().getFullYear()}</span>

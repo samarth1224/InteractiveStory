@@ -1,8 +1,8 @@
 """Authentication router — login, guest access, token issuance, and logout."""
 
-from app.config import settings
-from app.models.usermodel import User
-from app.utility.security import verify_password, create_access_token
+from app import config
+from app.models.usermodel import User, UserCreate
+from app.utility.security import verify_password, create_access_token, get_password_hash
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
@@ -26,10 +26,40 @@ def _build_token_response(access_token: str) -> JSONResponse:
         httponly=True,
         samesite="none",
         secure=True,  # Set to True in production with HTTPS
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
     return response
+
+
+@router.post("/register")
+async def register_user(user: UserCreate) -> JSONResponse:
+    """Register a new user account and return an access token."""
+    existing_user = await User.find_one(User.username == user.username)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+
+    hashed_password = get_password_hash(password=user.password)
+    new_user = User(
+        username=user.username,
+        hashed_password=hashed_password,
+        is_guest=False,
+    )
+    await new_user.insert()
+
+    access_token_expires = timedelta(
+        minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+    access_token = create_access_token(
+        data={
+            "sub": str(new_user.public_id),
+            "username": new_user.username,
+            "is_guest": False,
+        },
+        expires_delta=access_token_expires,
+    )
+
+    return _build_token_response(access_token)
 
 
 @router.post("/token")
@@ -42,7 +72,7 @@ async def login_for_access_token(
         form_data.password, existing_user.hashed_password
     ):
         access_token_expires = timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES
         )
         access_token = create_access_token(
             data={
@@ -76,7 +106,7 @@ async def login_as_guest() -> JSONResponse:
     await guest_user.insert()
 
     access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES
     )
     access_token = create_access_token(
         data={

@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap } from 'lucide-react';
-import { StoryData } from '@/interfaces/storydata.type';
-import { StoryChoice } from '@/interfaces/storydata.type';
+import { StoryData, StoryNode, StoryChoice } from '@/interfaces/storydata.type';
+
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://localhost:25000";
 
@@ -39,7 +39,7 @@ function StoryDisplay({ content, image, pageNumber }: { content: string; image: 
 
 function ChoiceButtons({ choice, onSubmit }: {
   choice: StoryChoice[];
-  onSubmit: (choice_id: number) => void;
+  onSubmit: (choice: StoryChoice) => void;
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
@@ -54,7 +54,7 @@ function ChoiceButtons({ choice, onSubmit }: {
           <Button
             variant="outline"
             className="w-full h-auto min-h-[4.5rem] items-start justify-between text-left font-medium border-border hover:bg-foreground/5 hover:border-foreground/40 transition-all p-4 whitespace-normal"
-            onClick={() => onSubmit(c.choice_id)}
+            onClick={() => onSubmit(c)}
           >
             <span>{c.text}</span>
             <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0" strokeWidth={1.75} />
@@ -68,9 +68,16 @@ function ChoiceButtons({ choice, onSubmit }: {
 export default function StoryContainer(
   { StoryData }: { StoryData: StoryData }
 ) {
-  const [currentNode, setCurrentNode] = useState(StoryData.nodes[0]);
+  const [nodesCache, setNodesCache] = useState<Record<string, StoryNode>>(StoryData.nodes);
+  const [currentNode, setCurrentNode] = useState(Object.values(StoryData.nodes)[0]);
 
-  const handleSubmit = async (choice_id: number) => {
+  const handleSubmit = async (choice: StoryChoice) => {
+    const next_node_id = choice.next_node_id
+    if (nodesCache[next_node_id]) {
+      setCurrentNode(nodesCache[next_node_id]);
+      return
+    }
+
     try {
       const response = await fetch(`${baseUrl}/story/${StoryData.public_id}/create_node`, {
         method: "POST",
@@ -79,13 +86,14 @@ export default function StoryContainer(
         },
         body: JSON.stringify({
           previous_node_id: currentNode.node_id,
-          choice_id: choice_id,
+          choice_id: choice.choice_id,
         }),
         credentials: "include",
       })
       if (response.ok) {
         const data = await response.json();
         setCurrentNode(data);
+        setNodesCache((prev) => ({ ...prev, [data.node_id]: data }));
       }
     } catch (error) {
       console.error("An Error occurred", error);

@@ -10,7 +10,7 @@ from agent.schemas.NodeGenerator import StoryNodeGeneratorAgentResponse
 
 from fastapi import APIRouter, HTTPException, Body, Depends
 
-from typing import Annotated, List
+from typing import Annotated, List, Dict
 import uuid
 
 VerifyUserTokenDep = Annotated[User, Depends(verify_user_access_token)]
@@ -83,7 +83,7 @@ async def generate_story(
             total_nodes=master_plotline.bottleneck_map.stats.total_nodes,
             total_levels=master_plotline.bottleneck_map.stats.total_levels,
             state_variable_definitions=[variable.model_dump() for variable in master_plotline.branching_logic.state_variables],
-            nodes=[first_node],
+            nodes={first_node.node_id: first_node},
         )
         await new_story.insert()
         return new_story
@@ -91,10 +91,10 @@ async def generate_story(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{public_story_id}/nodes", response_model=List[StoryNodePublic])
+@router.get("/{public_story_id}/nodes", response_model=Dict[str, StoryNodePublic])
 async def get_story_nodes(
     public_story_id: uuid.UUID,
-) -> List[StoryNodePublic]:
+) -> Dict[str, StoryNodePublic]:
     """Retrieve all generated nodes for a given story."""
     story = await Story.find_one(Story.public_id == public_story_id)
     if not story:
@@ -114,10 +114,7 @@ async def create_node(
     if not story:
         raise HTTPException(status_code=404, detail="Story Not Found")
 
-    previous_node = next(
-        (node for node in story.nodes if node.node_id == previous_node_id),
-        None,
-    )
+    previous_node = story.nodes.get(previous_node_id)
     if not previous_node:
         raise HTTPException(status_code=404, detail="Previous node not found")
 
@@ -127,10 +124,7 @@ async def create_node(
     choice = previous_node.choices[choice_id - 1]
 
     # If the target node has already been generated, return it directly
-    existing_node = next(
-        (node for node in story.nodes if node.node_id == choice.next_node_id),
-        None,
-    )
+    existing_node = story.nodes.get(choice.next_node_id)
     if existing_node:
         return existing_node
 
@@ -157,7 +151,7 @@ async def create_node(
     )
 
     # Persist the new node to the database
-    story.nodes.append(next_node)
+    story.nodes[next_node.node_id] = next_node
     await story.save()
 
     return next_node

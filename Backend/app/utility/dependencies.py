@@ -1,6 +1,6 @@
 """FastAPI dependency functions for request-level authorization."""
 
-from app.config import settings
+from app import config
 from app.models.securitymodel import TokenData
 from app.models.usermodel import User
 from app.utility.security import extract_token_from_request
@@ -26,8 +26,8 @@ async def verify_user_access_token(request: Request) -> User:
     try:
         payload = jwt.decode(
             token,
-            settings.JWT_SECRET_KEY,
-            algorithms=[settings.JWT_ALGORITHM],
+            config.JWT_SECRET_KEY,
+            algorithms=[config.JWT_ALGORITHM],
         )
         public_id = payload.get("sub")
         username = payload.get("username")

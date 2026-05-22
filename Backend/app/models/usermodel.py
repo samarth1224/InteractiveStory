@@ -18,14 +18,14 @@ class UserBase(BaseModel):
 
 class User(Document, UserBase):
     """MongoDB document representing an application user."""
-
+    public_id: uuid.UUID = Field(default_factory=uuid.uuid4)
     hashed_password: Optional[str] = None
 
 
 class UserPublic(UserBase):
     """Public-facing user profile returned by the API."""
-
     pass
+
 
 
 class UserCreate(BaseModel):

@@ -67,7 +67,7 @@ class Story(Document, StoryBase):
 
     user_id: uuid.UUID  # Reference to User
     master_plotline: Dict[str, Any]  # Stores StoryPlotlinePlan
-    nodes: List[StoryNode] = Field(default_factory=list)
+    nodes: Dict[str, StoryNode] = Field(default_factory=dict)
 
 
 class StoryPublic(StoryBase):
