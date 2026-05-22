@@ -1,9 +1,4 @@
-"""
-Story router — CRUD and AI generation of interactive stories.
-
-Provides endpoints for listing, retrieving, and generating stories, as
-well as creating new story nodes when the reader makes a choice.
-"""
+"""Story router — CRUD and AI generation of interactive stories."""
 
 from app.models.storymodel import StoryPublic, Story, StoryNodePublic, StoryNode, StateVariable
 from app.models.usermodel import User
@@ -25,17 +20,7 @@ router = APIRouter(prefix="/story", tags=["Story"])
 
 @router.get("/stories", response_model=List[StoryPublic])
 async def get_stories(user: VerifyUserTokenDep) -> List[StoryPublic]:
-    """List all stories owned by the authenticated user.
-
-    Queries MongoDB for every :class:`Story` document whose
-    ``user_id`` matches the caller's ``public_id``.
-
-    Args:
-        user: The authenticated user (injected via dependency).
-
-    Returns:
-        A list of :class:`StoryPublic` summaries.
-    """
+    """List all stories owned by the authenticated user."""
     # stories = await Story.find(Story.user_id == str(user.public_id)).to_list()
     stories = await Story.find_all().to_list()
     return stories
@@ -43,17 +28,7 @@ async def get_stories(user: VerifyUserTokenDep) -> List[StoryPublic]:
 
 @router.get("/{public_id}", response_model=StoryPublic)
 async def get_story(public_id: uuid.UUID) -> StoryPublic:
-    """Retrieve a single story by its public UUID.
-
-    Args:
-        public_id: The story's public UUID (path parameter).
-
-    Returns:
-        The matching :class:`StoryPublic` summary.
-
-    Raises:
-        HTTPException: 404 if no story with the given ID exists.
-    """
+    """Retrieve a single story by its public UUID."""
     story = await Story.find_one(Story.public_id == public_id)
     if not story:
         raise HTTPException(status_code=404, detail="Story Not Found")
@@ -65,23 +40,7 @@ async def generate_story(
     user: VerifyUserTokenDep,
     prompt: Annotated[str, Body()],
 ) -> StoryPublic:
-    """Generate a brand-new interactive story from a user prompt.
-
-    Delegates to the AI agent to produce a master plotline and the
-    first story node, then persists the resulting :class:`Story`
-    document.
-
-    Args:
-        user: The authenticated user (injected via dependency).
-        prompt: Free-text description of the desired story.
-
-    Returns:
-        The newly created :class:`StoryPublic` summary.
-
-    Raises:
-        HTTPException: 500 if the agent fails to produce a valid
-            story or an unexpected runtime error occurs.
-    """
+    """Generate a brand-new interactive story from a user prompt."""
     try:
         story_id = uuid.uuid4()
         await create_session(
@@ -136,17 +95,7 @@ async def generate_story(
 async def get_story_nodes(
     public_story_id: uuid.UUID,
 ) -> List[StoryNodePublic]:
-    """Retrieve all generated nodes for a given story.
-
-    Args:
-        public_story_id: The story's public UUID (path parameter).
-
-    Returns:
-        An ordered list of :class:`StoryNodePublic` nodes.
-
-    Raises:
-        HTTPException: 404 if no story with the given ID exists.
-    """
+    """Retrieve all generated nodes for a given story."""
     story = await Story.find_one(Story.public_id == public_story_id)
     if not story:
         raise HTTPException(status_code=404, detail="Story Not Found")
@@ -160,26 +109,7 @@ async def create_node(
     previous_node_id: Annotated[str, Body()],
     choice_id: Annotated[int, Body()],
 ) -> StoryNodePublic:
-    """Create the next story node based on a reader's choice.
-
-    Looks up the story and the node the reader just finished, validates
-    the chosen option, invokes the AI agent to generate a continuation,
-    persists the new node, and returns it.
-
-    Args:
-        user: The authenticated user (injected via dependency).
-        public_story_id: The story's public UUID (path parameter).
-        previous_node_id: ``node_id`` of the node the reader just read.
-        choice_id: 1-based index of the selected choice.
-
-    Returns:
-        The newly generated :class:`StoryNodePublic` node.
-
-    Raises:
-        HTTPException: 404 if the story or previous node is not found.
-        HTTPException: 400 if the choice_id is invalid.
-        HTTPException: 500 if the agent encounters a runtime error.
-    """
+    """Create the next story node based on a reader's choice."""
     story = await Story.find_one(Story.public_id == public_story_id)
     if not story:
         raise HTTPException(status_code=404, detail="Story Not Found")

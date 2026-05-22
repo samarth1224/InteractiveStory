@@ -1,16 +1,4 @@
-"""
-FastAPI dependency functions for request-level authorization.
-
-This module houses reusable ``Depends()``-compatible callables.  Other
-modules should import from here when they need to declare authenticated
-endpoints, e.g.::
-
-    from app.utility.dependencies import verify_user_access_token
-
-    @router.get("/protected")
-    async def protected(user: Annotated[User, Depends(verify_user_access_token)]):
-        ...
-"""
+"""FastAPI dependency functions for request-level authorization."""
 
 from app.config import settings
 from app.models.securitymodel import TokenData
@@ -24,34 +12,7 @@ from jwt.exceptions import InvalidTokenError
 
 
 async def verify_user_access_token(request: Request) -> User:
-    """Validate a JWT token and return the corresponding user.
-
-    Supports both registered and guest users.  The token is first
-    extracted from the ``access_token`` HTTP-only cookie; if absent,
-    the ``Authorization: Bearer`` header is checked as a fallback.
-
-    This function is designed to be used as a FastAPI dependency via
-    ``Depends(verify_user_access_token)``.  It:
-
-    1. Extracts the JWT from the cookie or header.
-    2. Decodes and validates the JWT token.
-    3. Extracts the ``sub`` (public_id), ``username``, and ``is_guest``
-       claims.
-    4. Looks up the :class:`~app.models.usermodel.User` document in
-       MongoDB.
-    5. Returns the user or raises **401 Unauthorized**.
-
-    Args:
-        request: The incoming :class:`~fastapi.Request` (injected
-            automatically by FastAPI).
-
-    Returns:
-        The authenticated :class:`~app.models.usermodel.User` document.
-
-    Raises:
-        HTTPException: 401 if no token is present, the token is invalid
-            or expired, or the user no longer exists.
-    """
+    """Validate a JWT token and return the corresponding user."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
