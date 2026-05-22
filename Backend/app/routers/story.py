@@ -36,7 +36,8 @@ async def get_stories(user: VerifyUserTokenDep) -> List[StoryPublic]:
     Returns:
         A list of :class:`StoryPublic` summaries.
     """
-    stories = await Story.find(Story.user_id == str(user.public_id)).to_list()
+    # stories = await Story.find(Story.user_id == str(user.public_id)).to_list()
+    stories = await Story.find_all().to_list()
     return stories
 
 

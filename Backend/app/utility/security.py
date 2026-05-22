@@ -120,7 +120,6 @@ def extract_token_from_request(request: Request) -> str | None:
     """
     # 1. Try HTTP-only cookie
     token = request.cookies.get("access_token")
-    print(f'token = {token}')
     if token:
         return token
 
