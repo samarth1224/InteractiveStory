@@ -48,7 +48,7 @@ export default async function Home() {
       <section className="relative z-10 text-center px-6 pt-20 pb-16">
         {/* Headline */}
         <h1 className="font-bold leading-tight max-w-[800px] mx-auto mb-5 animate-[fadeInUp_0.7s_ease_0.1s_both] text-[clamp(2.2rem,5vw,4rem)] text-foreground">
-          {process.env.NEXT_PUBLIC_API_URL}
+          Where Imagination
           <br />
           <span className="text-muted-foreground">
             Become Worlds

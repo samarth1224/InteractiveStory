@@ -15,6 +15,13 @@ export default function Error({
     console.error(error);
   }, [error]);
 
+  const handleReset = () => {
+    // 1. Recover by attempting to re-render the segment
+    reset();
+    // 2. Full reload to force fresh server-side data fetching
+    window.location.reload();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4 text-center">
       <div className="bg-destructive/10 p-4 rounded-full mb-6">
@@ -25,7 +32,7 @@ export default function Error({
         We encountered an unexpected error while trying to load this page. Please try again.
       </p>
       <Button
-        onClick={() => reset()}
+        onClick={handleReset}
         variant="default"
         className="min-w-[120px]"
       >
