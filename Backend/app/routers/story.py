@@ -19,10 +19,17 @@ router = APIRouter(prefix="/story", tags=["Story"])
 
 
 @router.get("/stories", response_model=List[StoryPublic])
-async def get_stories(user: VerifyUserTokenDep) -> List[StoryPublic]:
+async def get_stories() -> List[StoryPublic]:
+    """List all stories from all users (limit to 10 latest)."""
+    # Sort by database ID descending to get the most recent, and limit to 10
+    stories = await Story.find_all().sort("-id").limit(10).to_list()
+    return stories
+
+
+@router.get("/stories/my", response_model=List[StoryPublic])
+async def get_my_stories(user: VerifyUserTokenDep) -> List[StoryPublic]:
     """List all stories owned by the authenticated user."""
-    # stories = await Story.find(Story.user_id == str(user.public_id)).to_list()
-    stories = await Story.find_all().to_list()
+    stories = await Story.find(Story.user_id == user.public_id).sort("-id").to_list()
     return stories
 
 
@@ -32,6 +39,7 @@ async def get_story(public_id: uuid.UUID) -> StoryPublic:
     story = await Story.find_one(Story.public_id == public_id)
     if not story:
         raise HTTPException(status_code=404, detail="Story Not Found")
+    print(story.state_variable_definitions)
     return story
 
 
@@ -64,18 +72,17 @@ async def generate_story(
             )
 
         first_node_state_variables = [
-            StateVariable(
-                variable_name=variable.variable_name,
-                value=variable.value,
-            )
+            variable.model_dump()
             for variable in master_plotline.branching_logic.state_variables
         ]
+        print(first_node_state_variables)
         first_node = StoryNode(
             **generated_node.model_dump(),
         )
         new_story = Story(
             public_id=story_id,
             title=master_plotline.bottleneck_map.title,
+            summary=master_plotline.bottleneck_map.summary,
             user_id=user.public_id,
             master_plotline=master_plotline.model_dump(),
             total_nodes=master_plotline.bottleneck_map.stats.total_nodes,
