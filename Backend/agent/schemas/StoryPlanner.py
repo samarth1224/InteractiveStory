@@ -121,6 +121,10 @@ class BottleneckMap(BaseModel):
         ...,
         description="A catchy title for the story.",
     )
+    summary: str = Field(
+        ...,
+        description="A captivating 1-2 line summary of the story's core plot.",
+    )
     hard_nodes: List[HardNode] = Field(
         ...,
         description="Exactly 4 hard nodes defining the story's structural pillars.",

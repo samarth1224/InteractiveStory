@@ -55,11 +55,11 @@ class StoryBase(BaseModel):
 
     public_id: uuid.UUID = Field(default_factory=uuid.uuid4)
     title: str
+    summary: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     total_nodes: int
     total_levels: int
     state_variable_definitions: List[Dict[str, Any]]
-    story_state_variables: List[StateVariable] = Field(default_factory=list)
 
 
 class Story(Document, StoryBase):

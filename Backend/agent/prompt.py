@@ -65,6 +65,7 @@ Response Instruction:-
       "total_nodes": integer (between 4 and 20)
     },
     "title": "A catchy title for the story",
+    "summary": "A captivating 1-2 line summary of the story's core plot.",
     "hard_nodes": [
       {
         "node_type": "Opening",
