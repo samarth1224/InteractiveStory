@@ -7,6 +7,7 @@ import StoryDiscoveryFeed from "@/components/home page/StoryDiscoveryFeed";
 import { StoryData } from "@/interfaces/storydata.type";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://localhost:25000";
 
@@ -15,6 +16,7 @@ export default function MyStoriesPage() {
   const router = useRouter();
   const [stories, setStories] = useState<StoryData[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -33,8 +35,8 @@ export default function MyStoriesPage() {
           const data = await response.json();
           setStories(data);
         }
-      } catch (error) {
-        console.error("failed to fetch my stories:", error);
+      } catch (err) {
+        setError("Failed to load your stories. Please check your connection and try again.");
       } finally {
         setFetching(false);
       }
@@ -69,7 +71,15 @@ export default function MyStoriesPage() {
       </div>
 
       <div className="relative z-10">
-        {stories && stories.length > 0 ? (
+        {error ? (
+          <div className="max-w-[1200px] mx-auto px-6 py-20 text-center">
+            <h2 className="text-2xl font-bold text-destructive mb-4">Error</h2>
+            <p className="text-muted-foreground mb-8">{error}</p>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Try Again
+            </Button>
+          </div>
+        ) : stories && stories.length > 0 ? (
           <StoryDiscoveryFeed Stories={stories} title="My Stories" subtitle="Your Creations" />
         ) : (
           <div className="max-w-[1200px] mx-auto px-6 py-20 text-center">

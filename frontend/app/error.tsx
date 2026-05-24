@@ -12,7 +12,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    // Optionally report error to an error tracking service (e.g., Sentry) in production
   }, [error]);
 
   const handleReset = () => {

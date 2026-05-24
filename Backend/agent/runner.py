@@ -49,7 +49,6 @@ async def create_session(user_id, story_id) -> Session:
     Returns:
         The newly created :class:`Session` instance.
     """
-    print(f'session_id = {story_id} and {str(story_id)}')
     return await session_service.create_session(
         app_name=APP_NAME,
         user_id=str(user_id),

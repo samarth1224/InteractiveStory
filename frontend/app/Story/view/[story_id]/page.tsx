@@ -7,50 +7,40 @@ async function fetchStory({ story_id }: { story_id: string }) {
   const cookieStore = await cookies();
   const cookieString = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
 
-  try {
-    const res = await fetch(`${baseUrl}/story/${story_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Cookie": cookieString
-      },
-      credentials: "include",
-    });
+  const res = await fetch(`${baseUrl}/story/${story_id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Cookie": cookieString
+    },
+    credentials: "include",
+  });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch story");
-    }
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.error("Data fetching error caught silently:", err);
-    return null;
+  if (!res.ok) {
+    throw new Error("Failed to fetch story");
   }
+  const data = await res.json();
+  return data;
 };
 
 async function fetchNodes({ story_id }: { story_id: string }) {
   const cookieStore = await cookies();
   const cookieString = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
 
-  try {
-    const res = await fetch(`${baseUrl}/story/${story_id}/nodes`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Cookie": cookieString
-      },
-      credentials: "include",
-    });
+  const res = await fetch(`${baseUrl}/story/${story_id}/nodes`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Cookie": cookieString
+    },
+    credentials: "include",
+  });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch nodes");
-    }
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.error("Data fetching error caught silently:", err);
-    return null;
+  if (!res.ok) {
+    throw new Error("Failed to fetch nodes");
   }
+  const data = await res.json();
+  return data;
 }
 
 

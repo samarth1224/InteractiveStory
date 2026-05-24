@@ -191,7 +191,7 @@ export default function StoryContainer(
   const [currentNode, setCurrentNode] = useState(Object.values(StoryData.nodes)[0]);
   const [statevariables, setStateVariables] = useState<StateVariable[]>(StoryData.state_variable_definitions);
   const [isLoading, setIsLoading] = useState(false);
-  console.log(statevariables)
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (choice: StoryChoice) => {
     const next_node_id = choice.next_node_id
@@ -203,6 +203,7 @@ export default function StoryContainer(
     }
 
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${baseUrl}/story/${StoryData.public_id}/create_node`, {
         method: "POST",
@@ -219,19 +220,16 @@ export default function StoryContainer(
         const data = await response.json();
         setCurrentNode(data);
         setNodesCache((prev) => ({ ...prev, [data.node_id]: data }));
+      } else {
+        setError("Failed to communicate with the storyteller. Please try again.");
       }
     } catch (error) {
-      console.error("An Error occurred", error);
+      setError("An error occured. Please try again.");
     } finally {
       setIsLoading(false);
     }
   }
 
-  if (StoryData == null) {
-    return (
-      null
-    )
-  }
   return (
     <motion.div
       initial={{ opacity: 0, y: 32 }}
@@ -254,6 +252,12 @@ export default function StoryContainer(
                 What happens next?
               </p>
               <ChoiceButtons choice={currentNode.choices} onSubmit={handleSubmit} disabled={isLoading} />
+
+              {error && (
+                <p className="text-destructive text-sm text-center mt-4 bg-destructive/10 py-2 rounded-md font-medium">
+                  {error}
+                </p>
+              )}
             </div>) : (
             <p className="text-muted-foreground text-center text-xs font-semibold uppercase tracking-widest mb-3">
               The End

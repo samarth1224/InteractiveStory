@@ -23,7 +23,7 @@ async function fetchStories(): Promise<StoryData[]> {
       return data;
     }
   } catch (error) {
-    console.error("failed to fetch stories:", error);
+    // Gracefully fallback to empty feed
   }
   return [];
 }
@@ -31,10 +31,6 @@ async function fetchStories(): Promise<StoryData[]> {
 
 export default async function Home() {
   const stories = await fetchStories();
-
-  if (!stories || stories.length === 0) {
-    console.log("No stories fetched or empty response");
-  }
 
   return (
     <main className="min-h-screen pt-[72px] relative overflow-hidden">

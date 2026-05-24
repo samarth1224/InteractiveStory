@@ -75,7 +75,6 @@ async def generate_story(
             variable.model_dump()
             for variable in master_plotline.branching_logic.state_variables
         ]
-        print(first_node_state_variables)
         first_node = StoryNode(
             **generated_node.model_dump(),
         )

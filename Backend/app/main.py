@@ -15,7 +15,6 @@ from pymongo import AsyncMongoClient
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application startup (MongoDB/Beanie init) and shutdown."""
-    print(config.MONGODB_URL)
     client = AsyncMongoClient(config.MONGODB_URL)
     await init_beanie(
         database=client[config.MONGODB_DB_NAME],
