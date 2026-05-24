@@ -23,5 +23,6 @@ export interface StoryData {
     state_variable_definitions: StateVariable[];
     public_id: string;
     title: string;
+    summary: string;
     nodes: Record<string, StoryNode>;
 }

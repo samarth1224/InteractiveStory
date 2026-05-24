@@ -61,7 +61,7 @@ export default function StoryDiscoveryFeed({
           <p className="text-muted-foreground text-xs font-semibold tracking-widest uppercase mb-1.5">
             {subtitle}
           </p>
-          <h2 className="text-3xl font-bold text-foreground">{title}</h2>
+          <h2 className="text-3xl font-cinzel font-semibold tracking-wider text-[#d4c5a9]">{title}</h2>
         </div>
       </motion.div>
 
@@ -109,8 +109,8 @@ function StoryCard({ story }: { story: StoryData }) {
 
         {/* Card Body */}
         <CardContent className="flex-1">
-          <CardDescription className="text-sm leading-relaxed line-clamp-2">
-            Lorem Ipsum doler set, Loren Ispsum Doler Set
+          <CardDescription className="text-sm leading-relaxed line-clamp-2 font-sans text-muted-foreground/80">
+            {story.summary || "Embark on an immersive, choice-driven interactive adventure designed by AI."}
           </CardDescription>
         </CardContent>
 
