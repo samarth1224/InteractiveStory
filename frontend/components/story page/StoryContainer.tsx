@@ -12,23 +12,23 @@ import { StoryData, StoryNode, StoryChoice, StateVariable } from '@/interfaces/s
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://localhost:25000";
 
 const THEME_RULES = [
-  { keywords: ['health', 'hp', 'life'], color: 'text-rose-400' },
-  { keywords: ['sanity', 'mind', 'mental'], color: 'text-purple-400' },
-  { keywords: ['reputation', 'trust', 'respect', 'relationship'], color: 'text-blue-400' },
-  { keywords: ['gold', 'money', 'coins', 'cash', 'credits'], color: 'text-amber-400' },
-  { keywords: ['ammo', 'bullets', 'energy', 'power'], color: 'text-yellow-400' },
-  { keywords: ['alert', 'threat', 'danger', 'suspicion', 'susp'], color: 'text-orange-400' },
-  { keywords: ['karma', 'morality', 'honor'], color: 'text-emerald-400' },
+  { keywords: ['health', 'hp', 'life'], color: 'text-[#c29d9d]' }, // Soft dusty rose
+  { keywords: ['sanity', 'mind', 'mental'], color: 'text-[#bcaec7]' }, // Soft lavender
+  { keywords: ['reputation', 'trust', 'respect', 'relationship'], color: 'text-[#9db3c4]' }, // Soothing steel blue
+  { keywords: ['gold', 'money', 'coins', 'cash', 'credits'], color: 'text-[#d4c5a9]' }, // Warm soft sand/gold
+  { keywords: ['ammo', 'bullets', 'energy', 'power'], color: 'text-[#d6ab94]' }, // Soothing warm orange/peach
+  { keywords: ['alert', 'threat', 'danger', 'suspicion', 'susp'], color: 'text-[#c9988f]' }, // Muted terracotta
+  { keywords: ['karma', 'morality', 'honor'], color: 'text-[#8fa89b]' }, // Soothing sage green
 ];
 
 const FALLBACK_PALETTES = [
-  'text-emerald-400',
-  'text-indigo-400',
-  'text-sky-400',
-  'text-violet-400',
-  'text-fuchsia-400',
-  'text-cyan-400',
-  'text-pink-400',
+  'text-[#8fa89b]', // Sage green
+  'text-[#9db3c4]', // Steel blue
+  'text-[#c29d9d]', // Dusty rose
+  'text-[#d4c5a9]', // Soft sand
+  'text-[#c9988f]', // Terracotta
+  'text-[#bcaec7]', // Lavender
+  'text-[#d6ab94]', // Peach
 ];
 
 const getVariableColor = (name: string) => {
@@ -85,7 +85,7 @@ function StoryDisplay({ content, image, pageNumber, statevariable }: { content: 
 function StateVariables({ state }: { state: StateVariable[] }) {
   const baseID = useId();
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1">
+    <div className="flex flex-wrap gap-x-8 gap-y-3 py-1">
       {state.map((variable, index) => {
         const colorClass = getVariableColor(variable.variable_name);
 
@@ -97,13 +97,17 @@ function StateVariables({ state }: { state: StateVariable[] }) {
         return (
           <motion.div
             key={`${baseID}-${index}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            className={`text-xs font-semibold uppercase tracking-wider ${colorClass}`}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
+            className="flex items-baseline gap-3"
           >
-            <span className="opacity-80">{variable.variable_name.replace(/_/g, ' ')}:</span>{' '}
-            <span className="font-bold">{displayValue}</span>
+            <span className="text-[10px] sm:text-xs font-serif tracking-[0.2em] uppercase text-muted-foreground/60 font-medium">
+              {variable.variable_name.replace(/_/g, ' ')}
+            </span>
+            <span className={`text-lg sm:text-xl font-serif font-semibold transition-all duration-300 ${colorClass}`}>
+              {displayValue}
+            </span>
           </motion.div>
         );
       })}
@@ -136,7 +140,7 @@ function ChoiceButtons({ choice, onSubmit }: {
             </div>
 
             {c.story_state_variables && c.story_state_variables.length > 0 && (
-              <div className="flex flex-wrap gap-x-3 gap-y-1 w-full pt-2 border-t border-border/40">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 w-full pt-3 border-t border-border/30">
                 {c.story_state_variables.map((variable, idx) => {
                   const colorClass = getVariableColor(variable.variable_name);
                   let displayVal = String(variable.value);
@@ -147,10 +151,14 @@ function ChoiceButtons({ choice, onSubmit }: {
                   return (
                     <span
                       key={idx}
-                      className={`text-[10px] font-bold tracking-wide uppercase ${colorClass}`}
+                      className="flex items-baseline gap-1.5 uppercase"
                     >
-                      <span className="opacity-80">{variable.variable_name.replace(/_/g, ' ')}:</span>{' '}
-                      <span>{displayVal}</span>
+                      <span className="text-[9px] font-serif tracking-[0.15em] text-muted-foreground/50 font-medium">
+                        {variable.variable_name.replace(/_/g, ' ')}:
+                      </span>
+                      <span className={`text-xs sm:text-sm font-serif font-semibold ${colorClass}`}>
+                        {displayVal}
+                      </span>
                     </span>
                   );
                 })}
