@@ -39,7 +39,15 @@ const headerVariants = {
 };
 
 /* ── Main Section ───────────── ──────────────────────────────── */
-export default function StoryDiscoveryFeed({ Stories = [] }: { Stories?: StoryData[] }) {
+export default function StoryDiscoveryFeed({
+  Stories = [],
+  title = "Explore Stories",
+  subtitle = "Community Favorites"
+}: {
+  Stories?: StoryData[];
+  title?: string;
+  subtitle?: string;
+}) {
   return (
     <section id="story-discovery" className="w-full max-w-[1200px] mx-auto px-6 pb-20">
       {/* Section Header */}
@@ -51,18 +59,10 @@ export default function StoryDiscoveryFeed({ Stories = [] }: { Stories?: StoryDa
       >
         <div>
           <p className="text-muted-foreground text-xs font-semibold tracking-widest uppercase mb-1.5">
-            Community Favorites
+            {subtitle}
           </p>
-          <h2 className="text-3xl font-bold text-foreground">Explore Stories</h2>
+          <h2 className="text-3xl font-bold text-foreground">{title}</h2>
         </div>
-
-        <motion.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
-          className="px-4 py-1.5 rounded-full text-xs font-semibold border border-border bg-transparent text-muted-foreground hover:bg-foreground hover:text-background transition-colors duration-200 cursor-pointer"
-        >
-          Browse Stories
-        </motion.button>
       </motion.div>
 
       {/* Story Grid */}
