@@ -47,11 +47,11 @@ export default async function Home() {
       {/* ── Hero Section ─────────────────────────────────────────────── */}
       <section className="relative z-10 text-center px-6 pt-20 pb-16">
         {/* Headline */}
-        <h1 className="font-bold leading-tight max-w-[800px] mx-auto mb-5 animate-[fadeInUp_0.7s_ease_0.1s_both] text-[clamp(2.2rem,5vw,4rem)] text-foreground">
+        <h1 className="font-bold leading-tight max-w-[800px] mx-auto mb-5 animate-[fadeInUp_0.7s_ease_0.1s_both] text-[clamp(2.2rem,5vw,4.2rem)] font-cinzel text-[#d4c5a9]">
           Where Imagination
           <br />
-          <span className="text-muted-foreground">
-            Become Worlds
+          <span className="bg-gradient-to-r from-[#8fa89b] to-[#9db3c4] bg-clip-text text-transparent">
+            Becomes Worlds
           </span>
         </h1>
 

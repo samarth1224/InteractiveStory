@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Raleway } from "next/font/google";
+import { Outfit, Cinzel, EB_Garamond } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/lib/auth-context";
 import Navbar from "@/components/Navbar";
 
-const ralewayHeading = Raleway({ subsets: ['latin'], variable: '--font-heading' });
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  variable: "--font-cinzel",
+});
+const ebGaramond = EB_Garamond({
+  subsets: ["latin"],
+  variable: "--font-garamond",
+});
 
 export const metadata: Metadata = {
   title: "InteractiveStory",
@@ -17,9 +26,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={cn(ralewayHeading.variable, "dark")}>
+    <html lang="en" className={cn(cinzel.variable, "dark")}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-foreground min-h-screen`}
+        className={`${outfit.variable} ${cinzel.variable} ${ebGaramond.variable} antialiased text-foreground min-h-screen font-sans`}
       >
         <AuthProvider>
           <Navbar />

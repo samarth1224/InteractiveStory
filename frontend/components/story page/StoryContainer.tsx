@@ -80,14 +80,14 @@ function StoryDisplay({ content, image, pageNumber, statevariable, isLoading = f
             <div className="h-4 bg-muted/20 rounded-md w-[60%] animate-pulse [animation-delay:600ms]" />
           </div>
         ) : (
-          <p className="text-foreground/90 leading-relaxed text-lg font-serif">{content}</p>
+          <p className="text-foreground/90 leading-relaxed text-[1.25rem] font-garamond">{content}</p>
         )}
-      <div className="flex justify-end mt-4">
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold bg-muted/30 px-2 py-1 rounded">
-          Page {pageNumber}
-        </span>
+        <div className="flex justify-end mt-4">
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold bg-muted/30 px-2 py-1 rounded">
+            Page {pageNumber}
+          </span>
+        </div>
       </div>
-    </div>
     </div >
   );
 }
@@ -241,7 +241,7 @@ export default function StoryContainer(
     >
       <Card className="shadow-2xl border-border/60">
         <CardHeader className="border-b border-border/40 pb-4">
-          <CardTitle className="text-xl font-bold text-foreground capitalize">
+          <CardTitle className="text-2xl font-cinzel font-semibold tracking-wider text-[#d4c5a9] capitalize">
             {StoryData.title}
           </CardTitle>
         </CardHeader>
