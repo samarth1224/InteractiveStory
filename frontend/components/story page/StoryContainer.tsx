@@ -47,7 +47,7 @@ const getVariableColor = (name: string) => {
   return FALLBACK_PALETTES[index];
 };
 
-function StoryDisplay({ content, image, pageNumber, statevariable }: { content: string; image: string | null; pageNumber: number, statevariable: StateVariable[] }) {
+function StoryDisplay({ content, image, pageNumber, statevariable, isLoading = false }: { content: string; image: string | null; pageNumber: number, statevariable: StateVariable[], isLoading?: boolean }) {
   return (
     <div className="space-y-6">
       {/* State Variable Plain HUD */}
@@ -71,14 +71,24 @@ function StoryDisplay({ content, image, pageNumber, statevariable }: { content: 
       )}
 
       <div className="prose prose-sm prose-invert max-w-none relative pt-2">
-        <p className="text-foreground/90 leading-relaxed text-lg font-serif">{content}</p>
-        <div className="flex justify-end mt-4">
-          <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold bg-muted/30 px-2 py-1 rounded">
-            Page {pageNumber}
-          </span>
-        </div>
+        {isLoading ? (
+          <div className="space-y-3.5 py-2">
+            <div className="h-4 bg-muted/20 rounded-md w-full animate-pulse" />
+            <div className="h-4 bg-muted/20 rounded-md w-[96%] animate-pulse [animation-delay:150ms]" />
+            <div className="h-4 bg-muted/20 rounded-md w-[92%] animate-pulse [animation-delay:300ms]" />
+            <div className="h-4 bg-muted/20 rounded-md w-[85%] animate-pulse [animation-delay:450ms]" />
+            <div className="h-4 bg-muted/20 rounded-md w-[60%] animate-pulse [animation-delay:600ms]" />
+          </div>
+        ) : (
+          <p className="text-foreground/90 leading-relaxed text-lg font-serif">{content}</p>
+        )}
+      <div className="flex justify-end mt-4">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold bg-muted/30 px-2 py-1 rounded">
+          Page {pageNumber}
+        </span>
       </div>
     </div>
+    </div >
   );
 }
 
@@ -115,9 +125,10 @@ function StateVariables({ state }: { state: StateVariable[] }) {
   );
 }
 
-function ChoiceButtons({ choice, onSubmit }: {
+function ChoiceButtons({ choice, onSubmit, disabled }: {
   choice: StoryChoice[];
   onSubmit: (choice: StoryChoice) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
@@ -127,11 +138,12 @@ function ChoiceButtons({ choice, onSubmit }: {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.08, duration: 0.3, ease: 'easeOut' }}
-          whileHover={{ y: -2 }}
+          whileHover={disabled ? {} : { y: -2 }}
         >
           <Button
             variant="outline"
-            className="w-full h-auto min-h-[5.5rem] flex flex-col items-start justify-between border-border hover:bg-foreground/5 hover:border-foreground/45 transition-all p-4 whitespace-normal gap-3 group relative overflow-hidden"
+            disabled={disabled}
+            className="w-full h-auto min-h-[5.5rem] flex flex-col items-start justify-between border-border hover:bg-foreground/5 hover:border-foreground/45 transition-all p-4 whitespace-normal gap-3 group relative overflow-hidden disabled:opacity-50 disabled:pointer-events-none"
             onClick={() => onSubmit(c)}
           >
             <div className="flex justify-between items-start w-full gap-3">
@@ -178,6 +190,7 @@ export default function StoryContainer(
   const [nodesCache, setNodesCache] = useState<Record<string, StoryNode>>(StoryData.nodes);
   const [currentNode, setCurrentNode] = useState(Object.values(StoryData.nodes)[0]);
   const [statevariables, setStateVariables] = useState<StateVariable[]>(StoryData.state_variable_definitions);
+  const [isLoading, setIsLoading] = useState(false);
   console.log(statevariables)
 
   const handleSubmit = async (choice: StoryChoice) => {
@@ -189,6 +202,7 @@ export default function StoryContainer(
       return
     }
 
+    setIsLoading(true);
     try {
       const response = await fetch(`${baseUrl}/story/${StoryData.public_id}/create_node`, {
         method: "POST",
@@ -208,6 +222,8 @@ export default function StoryContainer(
       }
     } catch (error) {
       console.error("An Error occurred", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -231,13 +247,13 @@ export default function StoryContainer(
         </CardHeader>
 
         <CardContent className="space-y-8 pt-6">
-          <StoryDisplay content={currentNode.content} image={currentNode.image_url} pageNumber={currentNode.level} statevariable={statevariables} />
-          {currentNode.choices ? (
+          <StoryDisplay content={currentNode.content} image={currentNode.image_url} pageNumber={currentNode.level} statevariable={statevariables} isLoading={isLoading} />
+          {currentNode.choices && currentNode.choices.length > 0 ? (
             <div>
               <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mb-3">
                 What happens next?
               </p>
-              <ChoiceButtons choice={currentNode.choices} onSubmit={handleSubmit} />
+              <ChoiceButtons choice={currentNode.choices} onSubmit={handleSubmit} disabled={isLoading} />
             </div>) : (
             <p className="text-muted-foreground text-center text-xs font-semibold uppercase tracking-widest mb-3">
               The End
