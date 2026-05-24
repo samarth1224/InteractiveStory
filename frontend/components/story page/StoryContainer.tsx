@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Zap } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { StoryData, StoryNode, StoryChoice } from '@/interfaces/storydata.type';
 
 
@@ -104,9 +104,7 @@ export default function StoryContainer(
     return (
       null
     )
-
   }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 32 }}
@@ -123,13 +121,17 @@ export default function StoryContainer(
 
         <CardContent className="space-y-8 pt-6">
           <StoryDisplay content={currentNode.content} image={currentNode.image_url} pageNumber={currentNode.level} />
-
-          <div>
+          {currentNode.choices ? (
+            <div>
+              <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mb-3">
+                What happens next?
+              </p>
+              <ChoiceButtons choice={currentNode.choices} onSubmit={handleSubmit} />
+            </div>) : (
             <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mb-3">
-              What happens next?
+              The End
             </p>
-            <ChoiceButtons choice={currentNode.choices} onSubmit={handleSubmit} />
-          </div>
+          )}
         </CardContent>
       </Card>
     </motion.div>

@@ -12,7 +12,6 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error(error);
   }, [error]);
 
@@ -25,7 +24,7 @@ export default function Error({
       <p className="text-muted-foreground max-w-md mb-8">
         We encountered an unexpected error while trying to load this page. Please try again.
       </p>
-      <Button 
+      <Button
         onClick={() => reset()}
         variant="default"
         className="min-w-[120px]"
