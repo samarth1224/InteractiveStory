@@ -70,10 +70,8 @@ async def generate_story(
             )
             for variable in master_plotline.branching_logic.state_variables
         ]
-
         first_node = StoryNode(
             **generated_node.model_dump(),
-            current_state=first_node_state_variables,
         )
         new_story = Story(
             public_id=story_id,
@@ -82,7 +80,7 @@ async def generate_story(
             master_plotline=master_plotline.model_dump(),
             total_nodes=master_plotline.bottleneck_map.stats.total_nodes,
             total_levels=master_plotline.bottleneck_map.stats.total_levels,
-            state_variable_definitions=[variable.model_dump() for variable in master_plotline.branching_logic.state_variables],
+            state_variable_definitions=first_node_state_variables,
             nodes={first_node.node_id: first_node},
         )
         await new_story.insert()
@@ -147,7 +145,6 @@ async def create_node(
 
     next_node = StoryNode(
         **generated_node.model_dump(),
-        current_state=choice.story_state_variables,
     )
 
     # Persist the new node to the database

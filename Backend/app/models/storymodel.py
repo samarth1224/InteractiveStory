@@ -35,7 +35,6 @@ class StoryNodeBase(BaseModel):
     content: str
     choices: List[Choice] = Field(default_factory=list)
     image_url: Optional[str] = None
-    current_state: List[StateVariable] = Field(default_factory=list)
 
 
 class StoryNode(StoryNodeBase):
@@ -60,6 +59,7 @@ class StoryBase(BaseModel):
     total_nodes: int
     total_levels: int
     state_variable_definitions: List[Dict[str, Any]]
+    story_state_variables: List[StateVariable] = Field(default_factory=list)
 
 
 class Story(Document, StoryBase):
