@@ -1,19 +1,63 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { StoryData, StoryNode, StoryChoice } from '@/interfaces/storydata.type';
+import { StoryData, StoryNode, StoryChoice, StateVariable } from '@/interfaces/storydata.type';
 
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://localhost:25000";
 
-function StoryDisplay({ content, image, pageNumber }: { content: string; image: string | null; pageNumber: number }) {
+const THEME_RULES = [
+  { keywords: ['health', 'hp', 'life'], color: 'text-rose-400' },
+  { keywords: ['sanity', 'mind', 'mental'], color: 'text-purple-400' },
+  { keywords: ['reputation', 'trust', 'respect', 'relationship'], color: 'text-blue-400' },
+  { keywords: ['gold', 'money', 'coins', 'cash', 'credits'], color: 'text-amber-400' },
+  { keywords: ['ammo', 'bullets', 'energy', 'power'], color: 'text-yellow-400' },
+  { keywords: ['alert', 'threat', 'danger', 'suspicion', 'susp'], color: 'text-orange-400' },
+  { keywords: ['karma', 'morality', 'honor'], color: 'text-emerald-400' },
+];
+
+const FALLBACK_PALETTES = [
+  'text-emerald-400',
+  'text-indigo-400',
+  'text-sky-400',
+  'text-violet-400',
+  'text-fuchsia-400',
+  'text-cyan-400',
+  'text-pink-400',
+];
+
+const getVariableColor = (name: string) => {
+  const n = name.toLowerCase();
+
+  // 1. Try keyword matching
+  const rule = THEME_RULES.find(r => r.keywords.some(k => n.includes(k)));
+  if (rule) return rule.color;
+
+  // 2. Fallback: Hash the name to pick a stable, unique dynamic color
+  let hash = 0;
+  for (let i = 0; i < n.length; i++) {
+    hash = n.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % FALLBACK_PALETTES.length;
+  return FALLBACK_PALETTES[index];
+};
+
+function StoryDisplay({ content, image, pageNumber, statevariable }: { content: string; image: string | null; pageNumber: number, statevariable: StateVariable[] }) {
   return (
     <div className="space-y-6">
+      {/* State Variable Plain HUD */}
+      {statevariable && statevariable.length > 0 && (
+        <div className="flex flex-wrap gap-x-4 gap-y-2 items-center justify-start py-2 border-b border-border/40">
+          <StateVariables state={statevariable} />
+        </div>
+      )}
+
+      {/* Image Block */}
       {image && image !== 'sample' && (
         <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border/40 shadow-2xl">
           <Image
@@ -25,7 +69,8 @@ function StoryDisplay({ content, image, pageNumber }: { content: string; image: 
           />
         </div>
       )}
-      <div className="prose prose-sm prose-invert max-w-none relative">
+
+      <div className="prose prose-sm prose-invert max-w-none relative pt-2">
         <p className="text-foreground/90 leading-relaxed text-lg font-serif">{content}</p>
         <div className="flex justify-end mt-4">
           <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold bg-muted/30 px-2 py-1 rounded">
@@ -37,12 +82,41 @@ function StoryDisplay({ content, image, pageNumber }: { content: string; image: 
   );
 }
 
+function StateVariables({ state }: { state: StateVariable[] }) {
+  const baseID = useId();
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-1">
+      {state.map((variable, index) => {
+        const colorClass = getVariableColor(variable.variable_name);
+
+        let displayValue = String(variable.value);
+        if (typeof variable.value === 'boolean') {
+          displayValue = variable.value ? 'Yes' : 'No';
+        }
+
+        return (
+          <motion.div
+            key={`${baseID}-${index}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+            className={`text-xs font-semibold uppercase tracking-wider ${colorClass}`}
+          >
+            <span className="opacity-80">{variable.variable_name.replace(/_/g, ' ')}:</span>{' '}
+            <span className="font-bold">{displayValue}</span>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
 function ChoiceButtons({ choice, onSubmit }: {
   choice: StoryChoice[];
   onSubmit: (choice: StoryChoice) => void;
 }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
       {choice.map((c, i) => (
         <motion.div
           key={c.choice_id}
@@ -53,11 +127,35 @@ function ChoiceButtons({ choice, onSubmit }: {
         >
           <Button
             variant="outline"
-            className="w-full h-auto min-h-[4.5rem] items-start justify-between text-left font-medium border-border hover:bg-foreground/5 hover:border-foreground/40 transition-all p-4 whitespace-normal"
+            className="w-full h-auto min-h-[5.5rem] flex flex-col items-start justify-between border-border hover:bg-foreground/5 hover:border-foreground/45 transition-all p-4 whitespace-normal gap-3 group relative overflow-hidden"
             onClick={() => onSubmit(c)}
           >
-            <span>{c.text}</span>
-            <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0" strokeWidth={1.75} />
+            <div className="flex justify-between items-start w-full gap-3">
+              <span className="font-medium text-foreground/90 leading-snug">{c.text}</span>
+              <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-300 group-hover:translate-x-1 mt-0.5" strokeWidth={2} />
+            </div>
+
+            {c.story_state_variables && c.story_state_variables.length > 0 && (
+              <div className="flex flex-wrap gap-x-3 gap-y-1 w-full pt-2 border-t border-border/40">
+                {c.story_state_variables.map((variable, idx) => {
+                  const colorClass = getVariableColor(variable.variable_name);
+                  let displayVal = String(variable.value);
+                  if (typeof variable.value === 'boolean') {
+                    displayVal = variable.value ? 'Yes' : 'No';
+                  }
+
+                  return (
+                    <span
+                      key={idx}
+                      className={`text-[10px] font-bold tracking-wide uppercase ${colorClass}`}
+                    >
+                      <span className="opacity-80">{variable.variable_name.replace(/_/g, ' ')}:</span>{' '}
+                      <span>{displayVal}</span>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </Button>
         </motion.div>
       ))}
@@ -65,14 +163,19 @@ function ChoiceButtons({ choice, onSubmit }: {
   );
 }
 
+
 export default function StoryContainer(
   { StoryData }: { StoryData: StoryData }
 ) {
   const [nodesCache, setNodesCache] = useState<Record<string, StoryNode>>(StoryData.nodes);
   const [currentNode, setCurrentNode] = useState(Object.values(StoryData.nodes)[0]);
+  const [statevariables, setStateVariables] = useState<StateVariable[]>(StoryData.state_variable_definitions);
+  console.log(statevariables)
 
   const handleSubmit = async (choice: StoryChoice) => {
     const next_node_id = choice.next_node_id
+    setStateVariables(choice.story_state_variables);
+
     if (nodesCache[next_node_id]) {
       setCurrentNode(nodesCache[next_node_id]);
       return
@@ -120,7 +223,7 @@ export default function StoryContainer(
         </CardHeader>
 
         <CardContent className="space-y-8 pt-6">
-          <StoryDisplay content={currentNode.content} image={currentNode.image_url} pageNumber={currentNode.level} />
+          <StoryDisplay content={currentNode.content} image={currentNode.image_url} pageNumber={currentNode.level} statevariable={statevariables} />
           {currentNode.choices ? (
             <div>
               <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mb-3">
@@ -128,7 +231,7 @@ export default function StoryContainer(
               </p>
               <ChoiceButtons choice={currentNode.choices} onSubmit={handleSubmit} />
             </div>) : (
-            <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mb-3">
+            <p className="text-muted-foreground text-center text-xs font-semibold uppercase tracking-widest mb-3">
               The End
             </p>
           )}

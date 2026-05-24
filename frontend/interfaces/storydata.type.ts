@@ -20,6 +20,7 @@ export interface StoryNode {
 }
 
 export interface StoryData {
+    state_variable_definitions: StateVariable[];
     public_id: string;
     title: string;
     nodes: Record<string, StoryNode>;
