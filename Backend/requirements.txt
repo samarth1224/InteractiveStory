@@ -8,6 +8,8 @@ argon2-cffi-bindings==25.1.0
 attrs==25.4.0
 Authlib==1.6.6
 beanie==2.1.0
+boto3==1.43.28
+botocore==1.43.28
 cachetools==6.2.2
 certifi==2025.11.12
 cffi==2.0.0
@@ -64,6 +66,7 @@ httpx-sse==0.4.3
 idna==3.11
 importlib_metadata==8.7.1
 Jinja2==3.1.6
+jmespath==1.1.0
 jsonschema==4.25.1
 jsonschema-specifications==2025.9.1
 lazy-model==0.4.0
@@ -111,6 +114,7 @@ rich-toolkit==0.17.0
 rignore==0.7.6
 rpds-py==0.30.0
 rsa==4.9.1
+s3transfer==0.18.0
 sentry-sdk==2.47.0
 shapely==2.1.2
 shellingham==1.5.4
