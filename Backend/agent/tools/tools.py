@@ -15,7 +15,7 @@ import requests
 url = "https://api.siliconflow.com/v1/images/generations"
 
 
-from app import config
+import os
 
 async def generate_image(prompt: str,
                         context: ToolContext | None = None):
@@ -37,7 +37,7 @@ async def generate_image(prompt: str,
         "image_size": "512x512"
     }
     headers = {
-        "Authorization": f"Bearer {config.SILICONFLOW_API_KEY}",
+        "Authorization": f"Bearer {os.getenv('SILICONFLOW_API_KEY', '')}",
         "Content-Type": "application/json"
     }
     response = requests.post(url, json=payload, headers=headers)

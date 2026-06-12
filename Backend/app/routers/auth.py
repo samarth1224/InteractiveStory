@@ -1,6 +1,6 @@
 """Authentication router — login, guest access, token issuance, and logout."""
 
-from app import config
+import os
 from app.models.usermodel import User, UserCreate
 from app.utility.security import verify_password, create_access_token, get_password_hash
 
@@ -26,7 +26,7 @@ def _build_token_response(access_token: str) -> JSONResponse:
         httponly=True,
         samesite="none",
         secure=True,  # Set to True in production with HTTPS
-        max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        max_age=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080")) * 60,
         path="/",
     )
     return response
@@ -48,7 +48,7 @@ async def register_user(user: UserCreate) -> JSONResponse:
     await new_user.insert()
 
     access_token_expires = timedelta(
-        minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES
+        minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
     )
     access_token = create_access_token(
         data={
@@ -72,7 +72,7 @@ async def login_for_access_token(
         form_data.password, existing_user.hashed_password
     ):
         access_token_expires = timedelta(
-            minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
         )
         access_token = create_access_token(
             data={
@@ -106,7 +106,7 @@ async def login_as_guest() -> JSONResponse:
     await guest_user.insert()
 
     access_token_expires = timedelta(
-        minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES
+        minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
     )
     access_token = create_access_token(
         data={

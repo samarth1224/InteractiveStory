@@ -1,6 +1,6 @@
 """Core security utilities for password hashing and JWT management."""
 
-from app import config
+import os
 
 from fastapi import Request
 from fastapi.security import OAuth2PasswordBearer
@@ -50,14 +50,14 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(
-            minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
         )
 
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
         to_encode,
-        config.JWT_SECRET_KEY,
-        algorithm=config.JWT_ALGORITHM,
+        os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production-abc123xyz789"),
+        algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
     )
     return encoded_jwt
 

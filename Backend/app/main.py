@@ -4,7 +4,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import config
+import os
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 from app.routers import story, user, auth
 from app.models import storymodel, usermodel
 
@@ -15,9 +18,9 @@ from pymongo import AsyncMongoClient
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application startup (MongoDB/Beanie init) and shutdown."""
-    client = AsyncMongoClient(config.MONGODB_URL)
+    client = AsyncMongoClient(os.getenv("MONGODB_URL"))
     await init_beanie(
-        database=client[config.MONGODB_DB_NAME],
+        database=client[os.getenv("MONGODB_DB_NAME", "interactive_story")],
         document_models=[storymodel.Story, usermodel.User],
     )
     yield
@@ -33,10 +36,18 @@ app = FastAPI(
 # CORS configuration
 import json
 
+def _get_cors_origins():
+    val = os.getenv("CORS_ORIGINS", "http://localhost,http://localhost:3000")
+    if val.strip().startswith("["):
+        try:
+            return json.loads(val)
+        except Exception:
+            pass
+    return val.split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.CORS_ORIGINS,
+    allow_origins=_get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
