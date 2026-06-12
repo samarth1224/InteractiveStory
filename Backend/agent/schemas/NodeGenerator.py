@@ -91,3 +91,7 @@ class StoryNodeGeneratorAgentResponse(BaseModel):
         default="No image available",
         description="The prompt to generate the image for the story node.",
     )
+    image_url: str | None = Field(
+        default=None,
+        description="The URL of the generated image returned by the generate_image tool.",
+    )

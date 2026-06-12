@@ -7,6 +7,7 @@ from app.utility.dependencies import verify_user_access_token
 from agent.runner import call_agent_async, create_session, runner
 from agent.schemas.StoryPlanner import StoryPlotlinePlan
 from agent.schemas.NodeGenerator import StoryNodeGeneratorAgentResponse
+from agent.tools.tools import generate_image
 
 from fastapi import APIRouter, HTTPException, Body, Depends
 
@@ -75,6 +76,11 @@ async def generate_story(
             variable.model_dump()
             for variable in master_plotline.branching_logic.state_variables
         ]
+        
+        # Generate image manually based on the prompt
+        if generated_node.image_prompt and generated_node.image_prompt != "No image available":
+            generated_node.image_url = await generate_image(generated_node.image_prompt)
+
         first_node = StoryNode(
             **generated_node.model_dump(),
         )
@@ -148,6 +154,10 @@ async def create_node(
 
     if generated_node is None:
         raise HTTPException(status_code=500, detail="Agent failed to generate story.")
+
+    # Generate image manually based on the prompt
+    if generated_node.image_prompt and generated_node.image_prompt != "No image available":
+        generated_node.image_url = await generate_image(generated_node.image_prompt)
 
     next_node = StoryNode(
         **generated_node.model_dump(),

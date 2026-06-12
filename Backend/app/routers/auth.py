@@ -126,8 +126,8 @@ async def logout() -> JSONResponse:
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        samesite="lax",
-        secure=False,  # Match the flags used when setting the cookie
+        samesite="none",
+        secure=True,  # Match the flags used when setting the cookie
         path="/",
     )
     return response

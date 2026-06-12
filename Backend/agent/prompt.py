@@ -204,7 +204,7 @@ Detailed Objective Description:
 
 
 Agent Final response:
-1) Generate the content,choice and prompt for the image.
+1) Generate the content, choice and prompt for the image.
 2) Also generate the respective story states for the corresponding choices.
 
 Note: Your final response is structured output.

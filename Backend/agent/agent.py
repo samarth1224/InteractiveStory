@@ -15,6 +15,7 @@ from .prompt import prompt_story_node_generator_agent, prompt_planner_agent
 from .schemas.NodeGenerator import StoryNodeGeneratorAgentResponse
 from .schemas.StoryPlanner import StoryPlotlinePlan
 from .callbacks.StoryPlannerCallbacks import save_states
+from .tools.tools import generate_image
 
 
 story_planner_agent = LlmAgent(
