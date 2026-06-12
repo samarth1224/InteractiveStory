@@ -97,8 +97,8 @@ export default function LoginPage() {
     return (
         <main className="min-h-screen pt-[72px] flex items-center justify-center px-6 py-16 relative overflow-hidden">
             {/* ── Ambient gradient orbs ───────────────────────── */}
-            <div className="absolute -top-32 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none blur-[140px] animate-[orbFloat_18s_ease-in-out_infinite] bg-[radial-gradient(circle,rgba(99,102,241,0.10)_0%,transparent_70%)]" />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none blur-[120px] animate-[orbFloat_22s_ease-in-out_-8s_infinite] bg-[radial-gradient(circle,rgba(56,189,248,0.07)_0%,transparent_70%)]" />
+            <div className="absolute -top-32 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(99,102,241,0.10)_0%,transparent_70%)]" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(56,189,248,0.07)_0%,transparent_70%)]" />
 
             <motion.div
                 initial={{ opacity: 0, y: 40, scale: 0.97 }}
