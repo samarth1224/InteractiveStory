@@ -43,7 +43,7 @@ def upload_to_s3(image_url: str) -> str:
             Body=img_resp.content,
             ContentType='image/png'
         )
-        region = os.getenv("AWS_REGION", "us-east-1")
+        region = os.getenv("AWS_REGION", "eu-north-1")
         return f"https://{bucket_name}.s3.{region}.amazonaws.com/{filename}"
     except Exception as e:
         print(f"Error uploading to S3: {e}")

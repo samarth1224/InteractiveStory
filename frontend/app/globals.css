@@ -55,7 +55,7 @@ body::before {
     3vw 65vh 0 2px rgba(255, 255, 255, 0.22),
     82vw 33vh 0 1px rgba(255, 255, 255, 0.18),
     39vw 78vh 0 1px rgba(255, 255, 255, 0.20);
-  animation: twinkleField 8s ease-in-out infinite alternate;
+  opacity: 0.8;
 }
 
 @keyframes twinkleField {
