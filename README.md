@@ -1,12 +1,12 @@
-# Interactive Story AI 📖✨
+# Interactive Story AI 
 
 An immersive, AI-powered interactive storytelling platform. **Interactive Story** allows users to generate dynamic, branching narratives where their choices genuinely shape the world, characters, and plotline. 
 
-This project consists of a Next.js frontend and a highly sophisticated **FastAPI + Google Agent Development Kit (ADK)** backend.
+This project consists of a Next.js frontend and a **FastAPI + Google Agent Development Kit (ADK) + MongoDB** backend.
 
 ---
 
-## 🏗️ Backend Architecture
+##  Backend Architecture
 
 The core of Interactive Story lies in its backend, which orchestrates Large Language Models (LLMs) to dynamically generate, track, and persist branching storylines in real-time.
 
@@ -19,7 +19,7 @@ The core of Interactive Story lies in its backend, which orchestrates Large Lang
 
 ### 2. How the Story is Structured
 
-The story generation is fundamentally modeled as a **Directed Acyclic Graph (DAG)** of interconnected narrative nodes, guided by a master plan. 
+The story generation is fundamentally modeled as a Graph of interconnected narrative nodes, guided by a master plan. 
 
 When a user initiates a new story, the backend triggers the **`StoryPlanner` Agent**:
 1. **The Bottleneck Map**: The AI acts as a Dungeon Master, outlining the overall narrative arc. It defines a "bottleneck map" which dictates the total number of levels/decisions it will take to reach a conclusion.
@@ -57,11 +57,9 @@ Inside a `Choice` object:
 4. The backend packages this new updated state (`Kingdom_Tension: 80`) alongside the user's action and feeds it back into the **`NodeGenerator` Agent**.
 5. The LLM processes the new constraint and generates **Node B**. Because the tension is now `80`, the AI alters its tone, generates a hostile scenario, and creates new choices reflecting the consequences of the user's past actions.
 
-This recursive loop ensures infinite, logically consistent replayability.
-
 ---
 
-## 🚀 API Flow summary
+##  API Flow summary
 
 1. **`POST /story/create_story`**: 
    Takes a prompt. Initializes the ADK Runner. The `StoryPlanner` generates the Master Plotline and State Variables. The `NodeGenerator` yields the first node. A SiliconFlow image is generated, uploaded to S3, and the entire `Story` document is saved to MongoDB.
@@ -72,8 +70,5 @@ This recursive loop ensures infinite, logically consistent replayability.
 
 ---
 
-## 🔒 Security & Deployment
-
-- **Environment**: All secrets (JWT, AWS, MongoDB URIs) are strictly loaded via `.env`.
-- **CORS**: Dynamically parsed to allow cross-origin requests from the specified frontend.
-- **Production**: Deployed via `ecosystem.config.js` (PM2) behind an Nginx reverse proxy managing port 8000 (Backend) and port 3000 (Frontend) on an AWS EC2 Ubuntu instance.
+##  Deployment
+ Deployed via PM2 behind an Nginx reverse proxy managing port 8000 (Backend) and port 3000 (Frontend) on an AWS EC2 Ubuntu instance.
