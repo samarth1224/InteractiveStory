@@ -44,7 +44,7 @@ async def get_story(public_id: uuid.UUID) -> StoryPublic:
     return story
 
 
-@router.post("/generate", response_model=Story)
+@router.post("/generate", response_model=StoryPublic)
 async def generate_story(
     user: VerifyUserTokenDep,
     prompt: Annotated[str, Body()],

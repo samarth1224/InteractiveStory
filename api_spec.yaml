@@ -1,0 +1,622 @@
+---
+openapi: 3.1.0
+info:
+  title: Interactive Story API
+  description: API for creating and playing AI-generated interactive stories
+  version: 1.0.0 
+paths:
+  "/auth/register":
+    post:
+      tags:
+      - Auth
+      summary: Register User
+      description: Register a new user account and return an access token.
+      operationId: register_user_auth_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UserCreate"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Token"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/auth/token":
+    post:
+      tags:
+      - Auth
+      summary: Login For Access Token
+      description: Authenticate a user and return a JWT access token.
+      operationId: login_for_access_token_auth_token_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              "$ref": "#/components/schemas/Body_login_for_access_token_auth_token_post"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Token"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/auth/guest":
+    post:
+      tags:
+      - Auth
+      summary: Login As Guest
+      description: Create a temporary guest account and return a JWT access token.
+      operationId: login_as_guest_auth_guest_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Token"
+  "/auth/logout":
+    post:
+      tags:
+      - Auth
+      summary: Logout
+      description: Clear the ``access_token`` cookie, effectively logging the user
+        out.
+      operationId: logout_auth_logout_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  "/users/me":
+    get:
+      tags:
+      - Users
+      summary: Get User
+      description: Return the profile of the currently authenticated user.
+      operationId: get_user_users_me_get
+      security:
+        - CookieAuth: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserPublic"
+  "/story/stories":
+    get:
+      tags:
+      - Story
+      summary: Get Stories
+      description: List all stories from all users (limit to 10 latest).
+      operationId: get_stories_story_stories_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  "$ref": "#/components/schemas/StoryPublic"
+                type: array
+                title: Response Get Stories Story Stories Get
+  "/story/stories/my":
+    get:
+      tags:
+      - Story
+      summary: Get My Stories
+      description: List all stories owned by the authenticated user.
+      operationId: get_my_stories_story_stories_my_get
+      security:
+        - CookieAuth: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  "$ref": "#/components/schemas/StoryPublic"
+                type: array
+                title: Response Get My Stories Story Stories My Get
+  "/story/{public_id}":
+    get:
+      tags:
+      - Story
+      summary: Get Story
+      description: Retrieve a single story by its public UUID.
+      operationId: get_story_story__public_id__get
+      parameters:
+      - name: public_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Public Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/StoryPublic"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/story/generate":
+    post:
+      tags:
+      - Story
+      summary: Generate Story
+      description: Generate a brand-new interactive story from a user prompt.
+      operationId: generate_story_story_generate_post
+      security:
+        - CookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              title: Prompt
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/StoryPublic"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/story/{public_story_id}/nodes":
+    get:
+      tags:
+      - Story
+      summary: Get Story Nodes
+      description: Retrieve all generated nodes for a given story.
+      operationId: get_story_nodes_story__public_story_id__nodes_get
+      parameters:
+      - name: public_story_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Public Story Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  "$ref": "#/components/schemas/StoryNodePublic"
+                title: Response Get Story Nodes Story  Public Story Id  Nodes Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/story/{public_story_id}/create_node":
+    post:
+      tags:
+      - Story
+      summary: Create Node
+      description: Create the next story node based on a reader's choice.
+      operationId: create_node_story__public_story_id__create_node_post
+      security:
+        - CookieAuth: []
+      parameters:
+      - name: public_story_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Public Story Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Body_create_node_story__public_story_id__create_node_post"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/StoryNodePublic"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/":
+    get:
+      tags:
+      - Health
+      summary: Read Root
+      description: Root health-check endpoint.
+      operationId: read_root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Read Root  Get
+  "/health":
+    get:
+      tags:
+      - Health
+      summary: Health Check
+      description: Detailed health-check endpoint.
+      operationId: health_check_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Health Check Health Get
+components:
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+  schemas:
+    Body_create_node_story__public_story_id__create_node_post:
+      properties:
+        previous_node_id:
+          type: string
+          title: Previous Node Id
+        choice_id:
+          type: integer
+          title: Choice Id
+      type: object
+      required:
+      - previous_node_id
+      - choice_id
+      title: Body_create_node_story__public_story_id__create_node_post
+    Body_login_for_access_token_auth_token_post:
+      properties:
+        grant_type:
+          anyOf:
+          - type: string
+            pattern: "^password$"
+          - type: 'null'
+          title: Grant Type
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          format: password
+          title: Password
+        scope:
+          type: string
+          title: Scope
+          default: ''
+        client_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Id
+        client_secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          format: password
+          title: Client Secret
+      type: object
+      required:
+      - username
+      - password
+      title: Body_login_for_access_token_auth_token_post
+    Choice:
+      properties:
+        choice_id:
+          type: integer
+          title: Choice Id
+        text:
+          type: string
+          title: Text
+        next_node_id:
+          type: string
+          title: Next Node Id
+        story_state_variables:
+          items:
+            "$ref": "#/components/schemas/StateVariable"
+          type: array
+          title: Story State Variables
+      type: object
+      required:
+      - choice_id
+      - text
+      - next_node_id
+      - story_state_variables
+      title: Choice
+      description: A selectable choice presented at the end of a story node.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            "$ref": "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    StateVariable:
+      properties:
+        variable_name:
+          type: string
+          title: Variable Name
+          description: The unique ID of the variable.
+        value:
+          title: Value
+          description: The initial value of this state variable. Its type is same
+            as attribute type
+      type: object
+      required:
+      - variable_name
+      - value
+      title: StateVariable
+      description: A single state variable and its current value.
+    Story:
+      properties:
+        public_id:
+          type: string
+          format: uuid
+          title: Public Id
+        title:
+          type: string
+          title: Title
+        summary:
+          type: string
+          title: Summary
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        total_nodes:
+          type: integer
+          title: Total Nodes
+        total_levels:
+          type: integer
+          title: Total Levels
+        state_variable_definitions:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: State Variable Definitions
+
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        master_plotline:
+          additionalProperties: true
+          type: object
+          title: Master Plotline
+        nodes:
+          additionalProperties:
+            "$ref": "#/components/schemas/StoryNode"
+          type: object
+          title: Nodes
+      type: object
+      required:
+      - title
+      - summary
+      - total_nodes
+      - total_levels
+      - state_variable_definitions
+      - user_id
+      - master_plotline
+      title: Story
+      description: MongoDB document for a complete interactive story.
+    StoryNode:
+      properties:
+        node_id:
+          type: string
+          title: Node Id
+        level:
+          type: integer
+          title: Level
+        content:
+          type: string
+          title: Content
+        choices:
+          items:
+            "$ref": "#/components/schemas/Choice"
+          type: array
+          maxItems: 2
+          title: Choices
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+        image_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Prompt
+      type: object
+      required:
+      - node_id
+      - level
+      - content
+      title: StoryNode
+      description: Full story node stored in the database.
+    StoryNodePublic:
+      properties:
+        node_id:
+          type: string
+          title: Node Id
+        level:
+          type: integer
+          title: Level
+        content:
+          type: string
+          title: Content
+        choices:
+          items:
+            "$ref": "#/components/schemas/Choice"
+          type: array
+          title: Choices
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+      type: object
+      required:
+      - node_id
+      - level
+      - content
+      title: StoryNodePublic
+      description: Public-facing story node returned by the API.
+    StoryPublic:
+      properties:
+        public_id:
+          type: string
+          format: uuid
+          title: Public Id
+        title:
+          type: string
+          title: Title
+        summary:
+          type: string
+          title: Summary
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        total_nodes:
+          type: integer
+          title: Total Nodes
+        total_levels:
+          type: integer
+          title: Total Levels
+        state_variable_definitions:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: State Variable Definitions
+      type: object
+      required:
+      - title
+      - summary
+      - total_nodes
+      - total_levels
+      - state_variable_definitions
+      title: StoryPublic
+      description: Public-facing story summary returned by the API.
+    Token:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        token_type:
+          type: string
+          title: Token Type
+      type: object
+      required:
+      - access_token
+      - token_type
+      title: Token
+      description: Schema returned to clients after successful authentication.
+    UserCreate:
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+      - username
+      - password
+      title: UserCreate
+      description: Schema for user registration requests.
+    UserPublic:
+      properties:
+        public_id:
+          type: string
+          format: uuid
+          title: Public Id
+        username:
+          type: string
+          title: Username
+        is_guest:
+          type: boolean
+          title: Is Guest
+          default: false
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - username
+      title: UserPublic
+      description: Public-facing user profile returned by the API.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
