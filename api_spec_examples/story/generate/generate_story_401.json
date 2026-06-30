@@ -1,0 +1,17 @@
+{
+  "http-request": {
+    "method": "POST",
+    "path": "/story/generate",
+    "headers": {
+      "Authorization": "Bearer bad-token",
+      "Content-Type": "application/json"
+    },
+    "body": "\"A brave knight explores a haunted castle.\""
+  },
+  "http-response": {
+    "status": 401,
+    "body": {
+      "detail": "Could not validate credentials"
+    }
+  }
+}

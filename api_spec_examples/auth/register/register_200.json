@@ -1,0 +1,20 @@
+{
+    "http-request": {
+        "method": "POST",
+        "path": "/auth/register",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": {
+            "username": "(string)",
+            "password": "(string)"
+        }
+    },
+    "http-response": {
+        "status": 200,
+        "body": {
+            "access_token": "(string)",
+            "token_type": "(string)"
+        }
+    }
+}

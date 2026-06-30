@@ -17,3 +17,29 @@ class TokenData(BaseModel):
     username: str | None = None
     public_id: uuid.UUID = Field(default_factory=uuid.uuid4)
     is_guest: bool = False
+
+
+    # // {
+# //   "http-request": {
+# //     "method": "POST",
+# //     "path": "/auth/token",
+# //     "headers": {
+# //       "Content-Type": "application/x-www-form-urlencoded"
+# //     },
+# //     "form-fields": {
+# //       "username": "test_user",
+# //       "password": "SecureP@ssw0rd!",
+# //       "grant_type": "password",
+# //       "scope": "",
+# //       "client_id": "",
+# //       "client_secret": ""
+# //     }
+# //   },
+# //   "http-response": {
+# //     "status": 200,
+# //     "body": {
+# //       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test",
+# //       "token_type": "bearer"
+# //     }
+# //   }
+# // }

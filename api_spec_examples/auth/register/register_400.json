@@ -1,0 +1,19 @@
+{
+  "http-request": {
+    "method": "POST",
+    "path": "/auth/register",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "username": "test_user",
+      "password": "SecureP@ssw0rd!"
+    }
+  },
+  "http-response": {
+    "status": 400,
+    "body": {
+      "detail": "Username already registered"
+    }
+  }
+}

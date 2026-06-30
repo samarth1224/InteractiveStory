@@ -1,0 +1,23 @@
+{
+  "http-request": {
+    "method": "POST",
+    "path": "/auth/token",
+    "headers": {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    "form-fields": {
+      "username": "test_user",
+      "password": "WrongPassword",
+      "grant_type": "password",
+      "scope": "",
+      "client_id": "",
+      "client_secret": ""
+    }
+  },
+  "http-response": {
+    "status": 401,
+    "body": {
+      "detail": "Incorrect username or password"
+    }
+  }
+}

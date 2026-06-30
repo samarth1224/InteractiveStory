@@ -1,0 +1,15 @@
+{
+  "http-request": {
+    "method": "GET",
+    "path": "/users/me",
+    "headers": {
+      "Authorization": "Bearer bad-token"
+    }
+  },
+  "http-response": {
+    "status": 401,
+    "body": {
+      "detail": "Could not validate credentials"
+    }
+  }
+}

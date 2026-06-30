@@ -25,6 +25,16 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/Token"
+        '400':
+          description: Username already registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Username already registered
         '422':
           description: Validation Error
           content:
@@ -51,6 +61,16 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/Token"
+        '401':
+          description: Incorrect username or password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Incorrect username or password
         '422':
           description: Validation Error
           content:
@@ -93,7 +113,7 @@ paths:
       description: Return the profile of the currently authenticated user.
       operationId: get_user_users_me_get
       security:
-        - CookieAuth: []
+        - OAuth2PasswordBearer: []
       responses:
         '200':
           description: Successful Response
@@ -101,6 +121,16 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UserPublic"
+        '401':
+          description: Could not validate credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Could not validate credentials
   "/story/stories":
     get:
       tags:
@@ -126,7 +156,7 @@ paths:
       description: List all stories owned by the authenticated user.
       operationId: get_my_stories_story_stories_my_get
       security:
-        - CookieAuth: []
+        - OAuth2PasswordBearer: []
       responses:
         '200':
           description: Successful Response
@@ -137,6 +167,16 @@ paths:
                   "$ref": "#/components/schemas/StoryPublic"
                 type: array
                 title: Response Get My Stories Story Stories My Get
+        '401':
+          description: Could not validate credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Could not validate credentials
   "/story/{public_id}":
     get:
       tags:
@@ -159,6 +199,16 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/StoryPublic"
+        '404':
+          description: Story Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Story Not Found
         '422':
           description: Validation Error
           content:
@@ -173,7 +223,7 @@ paths:
       description: Generate a brand-new interactive story from a user prompt.
       operationId: generate_story_story_generate_post
       security:
-        - CookieAuth: []
+        - OAuth2PasswordBearer: []
       requestBody:
         content:
           application/json:
@@ -188,12 +238,32 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/StoryPublic"
+        '401':
+          description: Could not validate credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Could not validate credentials
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Agent failed to generate story
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Agent failed to generate story
   "/story/{public_story_id}/nodes":
     get:
       tags:
@@ -219,6 +289,16 @@ paths:
                 additionalProperties:
                   "$ref": "#/components/schemas/StoryNodePublic"
                 title: Response Get Story Nodes Story  Public Story Id  Nodes Get
+        '404':
+          description: Story Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Story Not Found
         '422':
           description: Validation Error
           content:
@@ -233,7 +313,7 @@ paths:
       description: Create the next story node based on a reader's choice.
       operationId: create_node_story__public_story_id__create_node_post
       security:
-        - CookieAuth: []
+        - OAuth2PasswordBearer: []
       parameters:
       - name: public_story_id
         in: path
@@ -255,12 +335,52 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/StoryNodePublic"
+        '400':
+          description: Invalid choice_id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Invalid choice_id
+        '401':
+          description: Could not validate credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Could not validate credentials
+        '404':
+          description: Story or previous node not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Story Not Found
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Agent failed to generate story
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Agent failed to generate story
   "/":
     get:
       tags:
@@ -295,10 +415,12 @@ paths:
                 title: Response Health Check Health Get
 components:
   securitySchemes:
-    CookieAuth:
-      type: apiKey
-      in: cookie
-      name: access_token
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: /auth/token
+          scopes: {}
   schemas:
     Body_create_node_story__public_story_id__create_node_post:
       properties:
@@ -316,10 +438,8 @@ components:
     Body_login_for_access_token_auth_token_post:
       properties:
         grant_type:
-          anyOf:
-          - type: string
-            pattern: "^password$"
-          - type: 'null'
+          type: string
+          pattern: "^password$"
           title: Grant Type
         username:
           type: string
@@ -333,16 +453,12 @@ components:
           title: Scope
           default: ''
         client_id:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: 'null'
           title: Client Id
         client_secret:
-          anyOf:
-          - type: string
-          - type: 'null'
-          format: password
+          type: 'null'
           title: Client Secret
+          
       type: object
       required:
       - username

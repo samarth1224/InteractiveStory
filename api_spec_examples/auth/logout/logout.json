@@ -1,0 +1,10 @@
+{
+  "http-request": {
+    "method": "POST",
+    "path": "/auth/logout"
+  },
+  "http-response": {
+    "status": 200,
+    "body": {}
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "http-request": {
+    "method": "GET",
+    "path": "/story/f39095e3-ebb5-47b0-a036-a2ab551db8b1"
+  },
+  "http-response": {
+    "status": 200,
+    "body": {
+      "public_id": "f39095e3-ebb5-47b0-a036-a2ab551db8b1",
+      "title": "The Lost Kingdom",
+      "summary": "An epic adventure through a forgotten realm.",
+      "created_at": "2026-06-01T12:00:00Z",
+      "total_nodes": 15,
+      "total_levels": 4,
+      "state_variable_definitions": [
+        {
+          "variable_name": "health",
+          "value": 100
+        }
+      ]
+    }
+  }
+}

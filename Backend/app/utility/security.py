@@ -11,16 +11,9 @@ from datetime import datetime, timedelta, timezone
 from pwdlib import PasswordHash
 
 
-# ---------------------------------------------------------------------------
-# OAuth2 scheme — used as a fallback; primary extraction is from cookies.
-# The ``auto_error=False`` flag prevents 401 when no Authorization header
-# is present so the cookie path can be tried instead.
-# ---------------------------------------------------------------------------
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
 
-# ---------------------------------------------------------------------------
-# Password hashing (Argon2)
-# ---------------------------------------------------------------------------
+# Password hashing
 password_hash = PasswordHash.recommended()
 
 # Pre-computed dummy hash used to prevent timing-based user-enumeration
@@ -36,7 +29,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a plain-text password using Argon2."""
+    """Hash a plain-text password """
     return password_hash.hash(password)
 
 
@@ -65,9 +58,23 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 # ---------------------------------------------------------------------------
 # Cookie-first token extraction
 # ---------------------------------------------------------------------------
-def extract_token_from_request(request: Request) -> str | None:
-    """Extract the JWT token from the request cookie."""
-    #HTTP-only cookie
+def extract_token_from_request(
+    request: Request,
+    bearer_token: str | None = None,
+) -> str | None:
+    """Extract the JWT token from the request.
+    Resolution order:
+      1. ``Authorization: Bearer <token>`` header (provided by FastAPI's
+         ``OAuth2PasswordBearer`` dependency via *bearer_token*).
+      2. ``access_token`` HTTP-only cookie (frontend flow).
+    This dual strategy means:
+      - Swagger UI / Specmatic / any standard client can use the header.
+      - The browser frontend continues to work via cookies.
+    """
+    # 1. Header (OAuth2 Bearer)
+    if bearer_token:
+        return bearer_token
+    # 2. Cookie fallback
     token = request.cookies.get("access_token")
     if token:
         return token

@@ -1,0 +1,20 @@
+{
+  "http-request": {
+    "method": "POST",
+    "path": "/story/f39095e3-ebb5-47b0-a036-a2ab551db8b1/create_node",
+    "headers": {
+      "Authorization": "Bearer bad-token",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "previous_node_id": "1A",
+      "choice_id": 1
+    }
+  },
+  "http-response": {
+    "status": 401,
+    "body": {
+      "detail": "Could not validate credentials"
+    }
+  }
+}

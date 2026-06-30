@@ -1,0 +1,18 @@
+{
+  "http-request": {
+    "method": "GET",
+    "path": "/story/f39095e3-ebb5-47b0-a036-a2ab551db8b1/nodes"
+  },
+  "http-response": {
+    "status": 200,
+    "body": {
+      "1A": {
+        "node_id": "1A",
+        "level": 1,
+        "content": "You carefully step into the dark passage...",
+        "choices": [],
+        "image_url": null
+      }
+    }
+  }
+}
