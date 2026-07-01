@@ -11,6 +11,8 @@ version: 3
 systemUnderTest:
   service:
     $ref: "#/components/services/interactiveStoryAPI"
+  runOptions:
+    $ref: "#/components/runOptions/testProfile"
 
 # -----------------------------------------------------------------------------
 # Dependencies — mock/stub server for frontend-first development
@@ -19,6 +21,8 @@ dependencies:
   services:
     - service:
         $ref: "#/components/services/interactiveStoryAPI"
+      runOptions:
+        $ref: "#/components/runOptions/mockProfile"
 
 # -----------------------------------------------------------------------------
 # Reusable Components
@@ -37,3 +41,15 @@ components:
               $ref: "#/components/sources/localFilesystem"
             specs:
               - api_spec.yaml
+
+  runOptions:
+    testProfile:
+      openapi:
+        type: test
+        host: localhost
+        port: 8000
+    mockProfile:
+      openapi:
+        type: mock
+        host: 0.0.0.0
+        port: 9000
