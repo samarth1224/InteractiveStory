@@ -1,32 +1,28 @@
 ---
-# Specmatic Configuration for Interactive Story API
+# =============================================================================
+# Specmatic Configuration — Interactive Story API
 # Docs: https://specmatic.io
+# =============================================================================
 version: 3
 
-
-
-# ---------------------------------------------------------------------------
-# System Under Test — for running contract tests against your backend
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# System Under Test — contract tests run against your live backend
+# -----------------------------------------------------------------------------
 systemUnderTest:
   service:
     $ref: "#/components/services/interactiveStoryAPI"
-  # runOptions:
-  #   $ref: "#/components/runOptions/contractTest"
 
-# ---------------------------------------------------------------------------
-# Dependencies — for running a mock/stub server
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Dependencies — mock/stub server for frontend-first development
+# -----------------------------------------------------------------------------
 dependencies:
   services:
     - service:
         $ref: "#/components/services/interactiveStoryAPI"
-      # runOptions:
-      #   $ref: "#/components/runOptions/mockServer"
 
-# ---------------------------------------------------------------------------
-# Reusable building blocks
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Reusable Components
+# -----------------------------------------------------------------------------
 components:
   sources:
     localFilesystem:
@@ -41,39 +37,3 @@ components:
               $ref: "#/components/sources/localFilesystem"
             specs:
               - api_spec.yaml
-
-  runOptions:
-    contractTest:
-      openapi:
-        type: test
-        baseUrl: "{APP_URL:http://localhost:8000}"
-        workflow:
-          ids:
-            "POST /auth/register -> 200":
-              extract: "BODY.access_token"
-            "POST /story/generate -> 200":
-              extract: "BODY.public_id"
-            "GET /story/{public_id} -> 200":
-              use: "PATH.public_id"
-            "GET /story/{public_story_id}/nodes -> 200":
-              use: "PATH.public_story_id"
-            "POST /story/{public_story_id}/create_node -> 200":
-              use: "PATH.public_story_id"
-            "*":
-              use: "HEADER.Authorization"
-  
-        
-
-    mockServer:
-      openapi:
-        type: mock
-        host: 0.0.0.0
-        port: 9000
-
-  # Sets the HTTP read timeout in milliseconds (e.g., 60000 ms = 60 seconds)
-  
-
-specmatic:
-  settings:
-    test:
-      timeoutInMilliseconds: 180000
