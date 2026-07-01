@@ -3,7 +3,7 @@
     "method": "GET",
     "path": "/users/me",
     "headers": {
-      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYWNkOTkxZi04OWM3LTQ5ODktYjkyZS02ZTZiYWIwNjlhZjgiLCJ1c2VybmFtZSI6InRlc3RfdXNlciIsImlzX2d1ZXN0IjpmYWxzZSwiZXhwIjo0OTM2Mzk5MDcwfQ.8_qrYQVYRhiTzWnX5GzLMs2ABaFgYHPh-Ybe4vrRRMs"
+      "Authorization": "Bearer $(JWT_TOKEN)"
     }
   },
   "http-response": {
