@@ -110,6 +110,7 @@ Key points to note:
 3. If you want to have images generated, get the SiliconFlow key than either,
  a) Leave the environment variables for AWS S3 section empty, this will directly take the link from the SiliconFlow servers(This is temporary link) 
  b) Set up AWS S3 bucket and fill in the environment variables for AWS S3 section, this will upload the images to your S3 bucket and the link will be taken from there(This is permanent link)  
+4. Please Leave the **DATABASE_URL** as it points to an local instance of sqlite database which is required for ADK to store session data. You dont have to do anything for this.
 
 **Run the Backend:**
 ```bash
