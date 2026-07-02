@@ -72,3 +72,78 @@ Inside a `Choice` object:
 
 ##  Deployment
  Deployed via PM2 behind an Nginx reverse proxy managing port 8000 (Backend) and port 3000 (Frontend) on an AWS EC2 Ubuntu instance.
+
+---
+
+## Installation & Local Setup
+
+### 1. Clone the repository.
+```bash
+git clone https://github.com/samarth1224/InteractiveStory.git
+cd InteractiveStory
+```
+
+### 2. Backend Setup (FastAPI)
+The backend requires Python 3.10+. Open a terminal and navigate to the project root.
+
+```bash
+cd Backend
+python -m venv venv
+
+# On Windows:
+venv\Scripts\activate
+# On Mac/Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+**Configure Environment:**
+Copy the `.env.example` file to create your `.env` file, and fill in your Google GenAI, MongoDB, and SiliconFlow API keys.
+```bash
+cp .env.example .env
+```
+Key points to note:
+1. Please make sure your MongoDB database is up and running.Make sure you copy connection string correctly.
+2. If you do not intend to engage in hassle of acquiring API key for SiliconFlow, you can skip it, but the images will not be generated.
+3. If you want to have images generated, get the SiliconFlow key than either,
+ a) Leave the environment variables for AWS S3 section empty, this will directly take the link from the SiliconFlow servers(This is temporary link) 
+ b) Set up AWS S3 bucket and fill in the environment variables for AWS S3 section, this will upload the images to your S3 bucket and the link will be taken from there(This is permanent link)  
+
+**Run the Backend:**
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+
+### 3. Frontend Setup (Next.js)
+Open a *new* terminal window.
+```bash
+cd frontend
+npm install
+```
+
+**Configure Environment:**
+Copy the `.env.example` file to create your `.env.local` file.
+```bash
+cp .env.example .env.local
+```
+
+**Run the Frontend:**
+```bash
+npm run dev
+```
+
+The Interactive Story platform should now be accessible at `http://localhost:3000`!
+
+### 4. API Contract Testing Using Specmatic (Optional)
+If you want to run the Specmatic API contract tests against your live backend.
+
+**Docker is required to run this test. Make sure your Docket engine is running**
+
+```bash
+# Make sure your backend is running, then run from the root directory:
+docker run --rm -v "${PWD}:/usr/src/app" --network host specmatic/specmatic test
+```
+

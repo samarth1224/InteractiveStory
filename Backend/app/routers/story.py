@@ -143,8 +143,8 @@ async def create_node(
         async for response in call_agent_async(
             prompt=prompt,
             runner=runner,
-            user_id=str(user.public_id),
-            story_id=public_story_id,
+            user_id=str(story.user_id),
+            story_id=public_story_id
         ):
             if isinstance(response, StoryNodeGeneratorAgentResponse):
                 generated_node = response
